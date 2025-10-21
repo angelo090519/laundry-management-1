@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Thia & Nicole Laundry - Home</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="toast.css">
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<style>
+  :root{--bg:#f4f7fb;--card:#fff;--primary:#1766ff;--muted:#6b7280;}
+  body{
+    margin: 0;
+    font-family: Inter, system-ui, Arial;
+    background: url('https://images.unsplash.com/photo-1696546761269-a8f9d2b80512?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE4fHx8ZW58MHx8fHx8&ixlib=rb-4.1.0&q=60&w=3000') no-repeat center center/cover fixed;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(188, 200, 224, 0.4), rgba(0,0,0,0.3));
+    z-index: 0;
+  }
+  .floating-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(174, 200, 226, 0.416); /* soft blue */
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 25px rgba(31, 31, 31, 0.2);
+    pointer-events: none;
+    animation: floatBubble linear infinite alternate;
+    z-index: 1;
+  } 
+    /* 15 bubbles, scattered & elegant */
+    .bubble1  { width:120px; height:120px; top:10%; left:8%;   animation: floatBubble 8s ease-in-out infinite; }
+    .bubble2  { width:200px; height:200px; bottom:25%; left:12%; animation: floatBubble 5s ease-in-out infinite 2s;}
+    .bubble3  { width:90px;  height:90px;  top:5%;  left:75%;  animation: floatBubble 6s ease-in-out infinite 2s; }
+    .bubble4  { width:150px; height:150px; bottom:20%; right:20%; animation: floatBubble 10s ease-in-out infinite 4s; }
+    .bubble5  { width:180px; height:180px; bottom:2%; left:8%; animation: floatBubble 7s ease-in-out infinite 4s; }
+    .bubble6  { width:100px; height:100px; top:50%; right:5%;   animation: floatBubble 9s ease-in-out infinite 3s; }
+    .bubble7  { width:130px; height:130px; bottom:8%; right:8%; animation: floatBubble 3s ease-in-out infinite 3s; }
+    .bubble8  { width:160px; height:160px; top:38%; left:55%; animation: floatBubble 3s ease-in-out infinite 3s; }
+    .bubble9  { width:110px; height:110px; top:18%; left:20%; animation: floatBubble 5s ease-in-out infinite 3s; }
+    .bubble10 { width:140px; height:140px; bottom:15%; left:65%; animation: floatBubble 2s ease-in-out infinite 2s; }
+    .bubble11 { width:170px; height:170px; bottom:0%; right:60%; animation: floatBubble 3s ease-in-out infinite 1s; }
+    .bubble12 { width:100px; height:100px; bottom:0%; left:25%; animation: floatBubble 8s ease-in-out infinite 4s; }
+    .bubble13 { width:190px; height:190px; top:4%; right:5%; animation: floatBubble 6s ease-in-out infinite 2s; }
+    .bubble14 { width:80px;  height:80px;  top:60%; left:30%; animation: floatBubble 5s ease-in-out infinite 5s; }
+    .bubble15 { width:150px; height:150px; bottom:90%; right:45%; animation: floatBubble 3s ease-in-out infinite 2s; }
+    @keyframes floatBubble {
+        0%   { transform: translateY(0) translateX(0); opacity: 0.7; }
+        50%  { transform: translateY(-40px) translateX(20px); opacity: 1; }
+        100% { transform: translateY(0) translateX(0); opacity: 0.7; }
+  }
+  .app{max-width:980px;margin:20px auto;padding:15px;z-index: 10; position: relative;} /* Adjusted padding */
+  .card{background:var(--card);padding:15px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06);margin-bottom:12px} /* Adjusted padding and margin */
+  .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px} /* Adjusted margin */
+  .avatar{width:60px;height:60px;border-radius:50%;background:#eee;overflow:hidden} /* Slightly smaller avatar */
+  .avatar img{width:100%;height:100%;object-fit:cover}
+  .btn{padding:9px 14px;border-radius:10px;background:var(--primary);color:#fff;border:none;cursor:pointer;font-size:14px;} /* Adjusted padding and font size */
+  .btn.alt{background:#eef2ff;color:var(--primary)}
+  .grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))} /* Adjusted gap */
+  .service-card{padding:12px;border:1px solid #eee;border-radius:12px;display:flex;justify-content:space-between;align-items:center} /* Adjusted padding */
+  .small{font-size:12px;color:var(--muted)} /* Smaller font */
+
+  /* Mobile-friendly bottom nav */
+  .bottom-nav {
+    display: none; /* Hidden by default, shown on small screens */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--card);
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    padding: 8px 0; /* Adjusted padding */
+    z-index: 1000;
+    justify-content: space-around;
+    align-items: center;
+  }
+  .bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 11px; /* Smaller font */
+    padding: 4px; /* Adjusted padding */
+  }
+  .bottom-nav a.active {
+    color: var(--primary);
+  }
+  .bottom-nav a i {
+    font-size: 18px; /* Smaller icon */
+    margin-bottom: 3px; /* Adjusted margin */
+  }
+
+  @media (max-width: 768px) {
+    .app {
+      margin-bottom: 65px; /* Space for bottom nav */
+    }
+    .bottom-nav {
+      display: flex;
+    }
+    .quick-actions-desktop {
+      display: none; /* Hide desktop quick actions on mobile */
+    }
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .header .btn.alt {
+      margin-top: 10px;
+      width: 100%;
+      text-align: center;
+    }
+  }
+ .map-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 40px auto;
+    width: 100%;
+    max-width: 900px; /* optional max width */
+    height: 500px;
+    position: relative;
+    z-index: 20; /* mas mataas kaysa sa .floating-bubble */
+  }
+
+  .map {
+    width: 100%;
+    height: 100%;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  }
+
+  .map iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+</style>
+</head>
+<body>
+  <div class="floating-bubble bubble1"></div>
+    <div class="floating-bubble bubble2"></div>
+    <div class="floating-bubble bubble3"></div>
+    <div class="floating-bubble bubble4"></div>
+    <div class="floating-bubble bubble5"></div>
+    <div class="floating-bubble bubble6"></div>
+    <div class="floating-bubble bubble7"></div>
+    <div class="floating-bubble bubble8"></div>
+    <div class="floating-bubble bubble9"></div>
+    <div class="floating-bubble bubble10"></div>
+    <div class="floating-bubble bubble11"></div>
+    <div class="floating-bubble bubble12"></div>
+    <div class="floating-bubble bubble13"></div>
+    <div class="floating-bubble bubble14"></div>
+    <div class="floating-bubble bubble15"></div>
+<div class="app">
+
+  <!-- Header -->
+  <div class="card header">
+    <div style="display:flex;align-items:center;gap:10px"> <!-- Adjusted gap -->
+      <div class="avatar" id="home-avatar" data-aos="flip-down"></div>
+      <div>
+        <div id="home-name" style="font-weight:700;font-size:16px" data-aos="fade-down-right"></div> <!-- Smaller font -->
+        <div id="home-contact" class="small" data-aos="fade-down-right"></div>
+        <div id="home-id" class="small" data-aos="fade-down-right"></div>
+        <div id="home-address" class="small" data-aos="fade-down-right"></div>
+        <div id="profile-completion" class="small" style="margin-top: 4px;" data-aos="fade-down-right"> <!-- Adjusted margin -->
+          Profile: <span id="progress-text"></span>
+          <progress id="profile-progress" value="0" max="100" style="width: 90px; height: 7px; vertical-align: middle;"></progress> <!-- Smaller progress bar -->
+        </div>
+      </div>
+    </div>
+    <button class="btn alt" id="logout-btn" data-aos="fade-down-left"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+
+  <!-- Quick actions (Desktop) -->
+  <div class="card quick-actions-desktop">
+    <h3 data-aos="zoom-in">Quick Actions</h3>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"> <!-- Adjusted gap and margin -->
+      <button class="btn" onclick="location.href='services.html'" data-aos="fade-right"><i class="fas fa-tshirt"></i> Services</button>
+      <button class="btn" onclick="location.href='transactions.html'" data-aos="fade-right"><i class="fas fa-receipt"></i> My Transactions</button>
+      <button class="btn" onclick="location.href='settings.html'" data-aos="fade-right"><i class="fas fa-cog"></i> Settings</button>
+      <button class="btn" onclick="location.href='machines.html'" id="machines-btn" style="display:none" data-aos="fade-left"><i class="fas fa-washer"></i> Machine Status</button>
+      <button class="btn" onclick="location.href='about.html'" data-aos="fade-left">About Us</button>
+      <button class="btn" onclick="location.href='contact.html'" data-aos="fade-left"><i class="fas fa-envelop"></i> Contact Us</button>
+      <a href="admin.html" class="btn" id="admin-btn" style="display:none;" data-aos="fade-left"><i class="fas fa-shield-alt"></i> Admin Panel</a>
+    </div>
+  </div>
+
+  <!-- Recent transactions -->
+  <div class="card">
+    <h3>Recent Transactions</h3>
+    <div id="recent-transactions-list" class="grid"></div>
+  </div>
+
+</div>
+
+<!-- Mobile Bottom Navigation -->
+<div class="bottom-nav">
+  <a href="home.html" class="active"><i class="fas fa-home"></i> Home</a>
+  <a href="services.html"><i class="fas fa-tshirt"></i> Services</a>
+  <a href="transactions.html"><i class="fas fa-receipt"></i> Transactions</a>
+  <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+</div>
+
+
+
+<script src="toast.js"></script>
+<script>
+/* ---------- STORAGE HELPERS ---------- */
+const LS_CURR = 'tn_current_v1';
+const LS_USERS = 'tn_accounts_v2';
+const LS_USER_WAITING_LIST = 'tn_user_waiting_v1'; // Added user waiting list
+
+function getLocalStorageItem(key, defaultValue = '[]') {
+    try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : JSON.parse(defaultValue);
+    } catch (e) {
+        console.error(`Error parsing localStorage item "${key}":`, e);
+        showToast(`Error loading data for ${key}. Please clear browser cache.`, 'error');
+        return JSON.parse(defaultValue);
+    }
+}
+
+function getUsers(){return getLocalStorageItem(LS_USERS, '[]');}
+function setCurrent(u){localStorage.setItem(LS_CURR,JSON.stringify(u));}
+function getCurrent(){return getLocalStorageItem(LS_CURR, 'null');}
+function getUserWaitingList(){return getLocalStorageItem(LS_USER_WAITING_LIST,'[]');}
+
+
+/* ---------- INIT PAGE ---------- */
+const curr = getCurrent();
+if(!curr || curr.email === undefined){ // Check for a valid current user object
+  showToast('Please login first', 'error');
+  window.location.href = 'auth.html';
+}
+document.getElementById('home-name').textContent = curr.name || curr.email;
+document.getElementById('home-contact').textContent = curr.contact || '';
+document.getElementById('home-id').textContent = 'ID: '+(curr.id||'—');
+document.getElementById('home-address').textContent = curr.address ? `Address: ${curr.address}` : '';
+
+
+const av = document.getElementById('home-avatar');
+if(curr.photo){av.innerHTML=`<img src="${curr.photo}">`;}
+
+if(curr.role==='admin'){
+  document.getElementById('admin-btn').style.display='inline-block';
+  document.getElementById('machines-btn').style.display='inline-block'; // Admin can also see machines
+} else {
+  document.getElementById('admin-btn').style.display = 'none';
+  document.getElementById('machines-btn').style.display='inline-block'; // Users can also see machines
+}
+
+/* ---------- PROFILE COMPLETION PROGRESS ---------- */
+function updateProfileCompletion() {
+  let completedFields = 0;
+  const totalFields = 6; // name, contact, email, password (implicit), photo, address
+
+  if (curr.name && curr.name.trim() !== '') completedFields++;
+  if (curr.contact && curr.contact.trim() !== '') completedFields++;
+  if (curr.email && curr.email.trim() !== '') completedFields++; // Email is always there
+  if (curr.password && curr.password.trim() !== '') completedFields++; // Password is always there
+  if (curr.photo && curr.photo.trim() !== '') completedFields++;
+  if (curr.address && curr.address.trim() !== '') completedFields++;
+
+  const progress = (completedFields / totalFields) * 100;
+  document.getElementById('profile-progress').value = progress;
+  document.getElementById('progress-text').textContent = `${Math.round(progress)}% Complete`;
+}
+updateProfileCompletion();
+
+
+/* ---------- RECENT TRANSACTIONS ---------- */
+const list = document.getElementById('recent-transactions-list');
+
+function renderRecentTransactions() {
+  list.innerHTML = '';
+  const users = getUsers();
+  const user = users.find(u=>u.email===curr.email);
+  const transactions = (user?.transactions||[]).slice().reverse().slice(0,3);
+  const userWaitingList = getUserWaitingList();
+  const currentUserQueuedTransactions = userWaitingList.filter(item => item.userEmail === curr.email).slice().reverse().slice(0,3);
+
+  if(transactions.length===0 && currentUserQueuedTransactions.length === 0){
+    list.innerHTML = '<div class="small">No recent transactions or queued items</div>';
+  }else{
+    // Combine and sort recent transactions and queued items
+    const combinedRecent = [...transactions.map(t => ({...t, type: 'transaction'})), ...currentUserQueuedTransactions.map(t => ({...t, type: 'queued'}))];
+    combinedRecent.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+    combinedRecent.slice(0,3).forEach(o=>{
+      const div = document.createElement('div');
+      div.className='service-card';
+      let statusText = o.status;
+      if (o.type === 'queued') {
+        statusText = `Queued - Waiting for ${o.queuedFor}`;
+      }
+
+      div.innerHTML = `
+        <div>
+          <strong>${o.service}</strong>
+          <div class="small">Transaction ${o.id}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="small">₱${o.total}</div>
+          <div class="small">${statusText}</div>
+        </div>
+      `;
+      list.appendChild(div);
+    });
+  }
+}
+renderRecentTransactions(); // Initial render
+
+/* ---------- LOGOUT ---------- */
+document.getElementById('logout-btn').onclick=()=>{
+  localStorage.removeItem(LS_CURR);
+  showToast('Logged out successfully!', 'info');
+  setTimeout(() => {
+    window.location.href = 'auth.html';
+  }, 800);
+};
+</script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  AOS.init();
+</script>
+</body>
+</html>

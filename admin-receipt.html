@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Receipt - Thia & Nicole Laundry</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  body { font-family: Arial, sans-serif; background: #fff; margin: 20px; }
+  .receipt { max-width: 520px; margin: auto; padding: 20px; border: 1px dashed #333; }
+  h2 { text-align: center; margin: 0 0 20px; }
+  .info { font-size: 14px; margin-bottom: 10px; }
+  .info strong { display: inline-block; width: 130px; }
+  .line { border-top: 1px dashed #aaa; margin: 14px 0; }
+  .total { font-size: 16px; font-weight: bold; text-align: right; margin-top: 12px; }
+  .timeline { font-size: 12px; margin-top: 12px; color: #555; }
+  .timeline div { margin-bottom: 4px; }
+  .btn { margin-top: 20px; padding: 8px 14px; background: #1766ff; color: #fff; border: none; border-radius: 6px; cursor: pointer; display:block; width:100%; }
+  .center { text-align:center; margin-top: 20px; font-size: 12px; color: #666; }
+</style>
+</head>
+<body>
+
+<div class="receipt">
+  <h2>🧾 Laundry Receipt</h2>
+  <div id="receipt-details"></div>
+  <div id="receipt-timeline"></div>
+  <button class="btn" onclick="window.print()"><i class="fas fa-print"></i> Print Receipt</button>
+  <button class="btn alt" onclick="location.href='admin.html'"><i class="fas fa-arrow-left"></i> Back to Admin</button>
+  <div class="center">Thia & Nicole Laundry • Thank you!</div>
+</div>
+
+<script>
+const LS_USERS = 'tn_accounts_v2';
+const LS_MACH = 'tn_machines_v1';
+const LS_USER_WAITING_LIST = 'tn_user_waiting_v1'; // Added for queued transactions
+
+// Helpers
+function getLocalStorageItem(key, defaultValue = '[]') {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : JSON.parse(defaultValue);
+  } catch (e) {
+    return JSON.parse(defaultValue);
+  }
+}
+function getUsers(){return getLocalStorageItem(LS_USERS, '[]');}
+function getMachines(){return getLocalStorageItem(LS_MACH, '[]');}
+function getUserWaitingList(){return getLocalStorageItem(LS_USER_WAITING_LIST,'[]');}
+
+
+// Read transactionId from URL
+const urlParams = new URLSearchParams(window.location.search);
+const transactionId = urlParams.get("transactionId");
+
+// Find transaction
+const users = getUsers();
+const userWaitingList = getUserWaitingList();
+let transaction = null, userName = "Unknown";
+
+// First, check in regular transactions
+users.forEach(u => {
+  (u.transactions || []).forEach(o => {
+    if (o.id === transactionId) {
+      transaction = o;
+      userName = u.name || u.email;
+    }
+  });
+});
+
+// If not found in regular transactions, check in user waiting list
+if (!transaction) {
+  userWaitingList.forEach(o => {
+    if (o.id === transactionId) {
+      transaction = o;
+      // Find the user from the main users list using userEmail in the queued transaction
+      const userObj = users.find(u => u.email === o.userEmail);
+      userName = userObj ? (userObj.name || userObj.email) : o.userEmail;
+    }
+  });
+}
+
+
+const machines = getMachines();
+const detailsBox = document.getElementById("receipt-details");
+const timelineBox = document.getElementById("receipt-timeline");
+
+if (!transaction) {
+  detailsBox.innerHTML = `<div style="color:red;">Transaction not found.</div>`;
+} else {
+  let machineInfo = "N/A";
+  if (transaction.reservedMachines && transaction.reservedMachines.length > 0) {
+    machineInfo = transaction.reservedMachines.map(resId => {
+      const machine = machines.find(m => m.id === resId);
+      return machine ? machine.name : resId;
+    }).join(", ");
+  } else if (transaction.allocatedWasherIds && transaction.allocatedWasherIds.length > 0) {
+    const washerNames = transaction.allocatedWasherIds.map(resId => {
+      const machine = machines.find(m => m.id === resId);
+      return machine ? machine.name : resId;
+    }).join(', ');
+    machineInfo = `Washers: ${washerNames}`;
+  }
+  if (transaction.allocatedDryerIds && transaction.allocatedDryerIds.length > 0) {
+    const dryerNames = transaction.allocatedDryerIds.map(resId => {
+      const machine = machines.find(m => m.id === resId);
+      return machine ? machine.name : resId;
+    }).join(', ');
+    machineInfo += (machineInfo !== "N/A" ? '; ' : '') + `Dryers: ${dryerNames}`;
+  }
+  if (machineInfo === "N/A" && transaction.currentMachineIds && transaction.currentMachineIds.length > 0) {
+    machineInfo = transaction.currentMachineIds.map(resId => {
+      const machine = machines.find(m => m.id === resId);
+      return machine ? machine.name : resId;
+    }).join(", ");
+  }
+  if (machineInfo === "N/A" && transaction.currentMachineId) { // Fallback for single machine
+    const machine = machines.find(m => m.id === transaction.currentMachineId);
+    machineInfo = machine ? machine.name : transaction.currentMachineId;
+  }
+  if (machineInfo === "N/A" && transaction.status.includes('Queued')) { // Updated for new queued statuses
+    machineInfo = `Queued for ${transaction.queuedFor}`;
+  }
+
+  let createdAt = transaction.createdAt ? new Date(transaction.createdAt).toLocaleString() : "N/A";
+  const paymentStatus = transaction.paidWith ? 'Paid' : 'Unpaid'; // Determine payment status
+
+  // Estimated Pickup/Delivery Date
+  let estimatedPickupDelivery = 'N/A';
+  if (transaction.pickup === 'pickup' && transaction.estimatedCompletion) {
+      const pickupDate = new Date(transaction.estimatedCompletion);
+      estimatedPickupDelivery = pickupDate.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+  } else if (transaction.pickup === 'deliver' && transaction.estimatedCompletion) {
+      const deliveryDate = new Date(transaction.estimatedCompletion);
+      estimatedPickupDelivery = deliveryDate.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+  } else if (transaction.status.includes('Queued')) {
+      estimatedPickupDelivery = 'TBD (Queued)';
+  }
+
+
+  detailsBox.innerHTML = `
+    <div class="info"><strong>Transaction ID:</strong> ${transaction.id}</div>
+    <div class="info"><strong>Customer:</strong> ${userName}</div>
+    <div class="info"><strong>Service:</strong> ${transaction.service}</div>
+    <div class="info"><strong>Machines:</strong> ${machineInfo}</div>
+    <div class="info"><strong>Status:</strong> ${transaction.status}</div>
+    <div class="info"><strong>Paid With:</strong> ${transaction.paidWith || "Unpaid"}</div>
+    <div class="info"><strong>Payment Status:</strong> ${paymentStatus}</div> <!-- Added Payment Status -->
+    <div class="info"><strong>Date:</strong> ${createdAt}</div>
+    <div class="info"><strong>Est. Pickup/Delivery:</strong> ${estimatedPickupDelivery}</div> <!-- New line -->
+    <div class="line"></div>
+    <div class="total">Total: ₱${transaction.total}</div>
+  `;
+  // Timeline
+  if (transaction.timeline && transaction.timeline.length > 0) {
+    timelineBox.innerHTML = `
+      <div class="timeline"><strong>Transaction History:</strong>
+        ${transaction.timeline.map(t => `<div>${t.status} (${new Date(t.t).toLocaleString()})</div>`).join("")}
+      </div>
+    `;
+  }
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Thia & Nicole Laundry - Confirm Transaction</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="toast.css">
+<style>
+  :root{--bg:#f4f7fb;--card:#fff;--primary:#1766ff;--muted:#6b7280;}
+  body{
+    margin:0;
+    font-family:Inter,system-ui,Arial;
+    background:url('https://images.unsplash.com/photo-1696546761269-a8f9d2b80512?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE4fHx8ZW58MHx8fHx8&ixlib=rb-4.1.0&q=60&w=3000') no-repeat center center/cover fixed;
+    position:relative;overflow-x:hidden;
+  }
+  body::before{
+    content:"";position:fixed;top:0;left:0;width:100%;height:100%;
+    background:linear-gradient(135deg,rgba(188,200,224,0.4),rgba(0,0,0,0.3));z-index:0;
+  }
+  .floating-bubble{position:absolute;border-radius:50%;background:rgba(174,200,226,0.416);
+    backdrop-filter:blur(10px);box-shadow:0 0 25px rgba(31,31,31,0.2);pointer-events:none;z-index:1}
+  @keyframes floatBubble{0%{transform:translateY(0) translateX(0);opacity:.7}50%{transform:translateY(-40px) translateX(20px);opacity:1}100%{transform:translateY(0) translateX(0);opacity:.7}}
+  .bubble1{width:120px;height:120px;top:10%;left:8%;animation:floatBubble 8s ease-in-out infinite}
+  .bubble2{width:200px;height:200px;bottom:25%;left:12%;animation:floatBubble 5s ease-in-out infinite 2s}
+  .bubble3{width:90px;height:90px;top:5%;left:75%;animation:floatBubble 6s ease-in-out infinite 2s}
+  .bubble4{width:150px;height:150px;bottom:20%;right:20%;animation:floatBubble 10s ease-in-out infinite 4s}
+  .bubble5{width:180px;height:180px;bottom:2%;left:8%;animation:floatBubble 7s ease-in-out infinite 4s}
+  .bubble6{width:100px;height:100px;top:50%;right:5%;animation:floatBubble 9s ease-in-out infinite 3s}
+  .bubble7{width:130px;height:130px;bottom:8%;right:8%;animation:floatBubble 3s ease-in-out infinite 3s}
+  .bubble8{width:160px;height:160px;top:38%;left:55%;animation:floatBubble 3s ease-in-out infinite 3s}
+  .bubble9{width:110px;height:110px;top:18%;left:20%;animation:floatBubble 5s ease-in-out infinite 3s}
+  .bubble10{width:140px;height:140px;bottom:15%;left:65%;animation:floatBubble 2s ease-in-out infinite 2s}
+  .bubble11{width:170px;height:170px;bottom:0%;right:60%;animation:floatBubble 3s ease-in-out infinite 1s}
+  .bubble12{width:100px;height:100px;bottom:0%;left:25%;animation:floatBubble 8s ease-in-out infinite 4s}
+  .bubble13{width:190px;height:190px;top:4%;right:5%;animation:floatBubble 6s ease-in-out infinite 2s}
+  .bubble14{width:80px;height:80px;top:60%;left:30%;animation:floatBubble 5s ease-in-out infinite 5s}
+  .bubble15{width:150px;height:150px;bottom:90%;right:45%;animation:floatBubble 3s ease-in-out infinite 2s}
+  .app{max-width:600px;margin:20px auto;padding:15px;position:relative;z-index:10}
+  .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06);margin-bottom:12px}
+  h2{margin-top:0;margin-bottom:15px;color:#111}
+  label{display:block;margin-bottom:4px;font-size:14px;color:#333}
+  input,select{width:100%;padding:9px;border-radius:8px;border:1px solid #ddd;box-sizing:border-box}
+  .btn{padding:9px 14px;border-radius:10px;background:var(--primary);color:#fff;border:none;cursor:pointer;font-size:14px}
+  .btn.alt{background:#eef2ff;color:var(--primary)}
+  .row{display:flex;gap:10px;margin-top:12px}
+  .col{flex:1}
+  .small{font-size:12px;color:var(--muted)}
+  #summary{margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #eee}
+  #total,#estimated-time,#reserved-machines-info{font-size:16px;margin-top:4px}
+  #reserved-machines-info{color:#007bff;font-weight:600;margin-top:8px}
+  .loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.8);display:flex;justify-content:center;align-items:center;z-index:9999;flex-direction:column}
+  .loading-overlay .spinner{border:4px solid #f3f3f3;border-top:4px solid var(--primary);border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite}
+  @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+  .loading-overlay p{margin-top:15px;font-size:16px;color:var(--primary)}
+  .hidden{display:none}
+  .stage-info {color: var(--primary); font-weight: 500; margin-top: 5px;}
+  .map-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 40px auto;
+    width: 100%;
+    max-width: 900px; /* optional max width */
+    height: 500px;
+    position: relative;
+    z-index: 20; /* mas mataas kaysa sa .floating-bubble */
+  }
+
+  .map {
+    width: 100%;
+    height: 100%;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  }
+
+  .map iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+</style>
+</head>
+<body>
+  <!-- bubbles -->
+  <div class="floating-bubble bubble1"></div><div class="floating-bubble bubble2"></div><div class="floating-bubble bubble3"></div><div class="floating-bubble bubble4"></div><div class="floating-bubble bubble5"></div><div class="floating-bubble bubble6"></div><div class="floating-bubble bubble7"></div><div class="floating-bubble bubble8"></div><div class="floating-bubble bubble9"></div><div class="floating-bubble bubble10"></div><div class="floating-bubble bubble11"></div><div class="floating-bubble bubble12"></div><div class="floating-bubble bubble13"></div><div class="floating-bubble bubble14"></div><div class="floating-bubble bubble15"></div>
+
+<div class="app">
+  <div class="card">
+    <h2><i class="fas fa-clipboard-check"></i> Confirm Transaction</h2>
+    <div id="summary"></div>
+
+    <label>Pickup or Delivery?</label>
+    <select id="pickup-deliver">
+      <option value="pickup">Pickup</option>
+      <option value="deliver">Deliver (+₱20)</option>
+    </select>
+
+    <div class="row">
+      <div class="col">
+        <label>Weight (kg)</label>
+        <input type="number" id="weight" value="8" min="1">
+      </div>
+      <div class="col">
+        <label>Quantity</label>
+        <input type="number" id="qty" value="1" min="1">
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <label>Estimated Completion Time</label>
+      <div id="estimated-time" style="font-weight:700;color:var(--primary);">Calculating...</div>
+      <div id="current-stage" class="stage-info"></div>
+    </div>
+
+    <div style="margin-top:12px">
+      <label>Total</label>
+      <div id="total" style="font-weight:700">₱0</div>
+    </div>
+
+    <div id="reserved-machines-info"></div>
+
+    <div class="row" style="margin-top:15px">
+      <button class="btn" id="proceed-btn"><i class="fas fa-money-bill-wave"></i> Proceed to Payment</button>
+      <button class="btn alt" onclick="location.href='services.html'"><i class="fas fa-times-circle"></i> Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="loading-overlay" class="loading-overlay hidden">
+  <div class="spinner"></div>
+  <p>Preparing your transaction...</p>
+</div>
+
+<div class="map-container">
+        <div class="mapBg"></div>
+        <div class="map">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d7722.309993109955!2d120.9673779!3d14.6532664!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f20.1!5e0!3m2!1sen!2sph!4v1727288000000!5m2!1sen!2sph " width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+</div>
+<script src="toast.js"></script>
+<script>
+/* ---------- STORAGE HELPERS ---------- */
+const LS_CURR='tn_current_v1',LS_MACH='tn_machines_v1',LS_WAITING_LIST='tn_waiting_list_v1', LS_USER_WAITING_LIST='tn_user_waiting_v1'; // Added LS_USER_WAITING_LIST
+function getLocalStorageItem(key,def='[]'){try{const i=localStorage.getItem(key);return i?JSON.parse(i):JSON.parse(def);}catch(e){console.error(e);return JSON.parse(def);}}
+function getMachines(){return getLocalStorageItem(LS_MACH,'[]');}
+function saveMachines(arr){localStorage.setItem(LS_MACH,JSON.stringify(arr));}
+function getCurrent(){return getLocalStorageItem(LS_CURR,'null');}
+function getWaitingList(){return getLocalStorageItem(LS_WAITING_LIST,'[]');}
+function saveWaitingList(arr){localStorage.setItem(LS_WAITING_LIST,JSON.stringify(arr));}
+function getUserWaitingList(){return getLocalStorageItem(LS_USER_WAITING_LIST,'[]');} // User-specific waiting list
+function saveUserWaitingList(arr){localStorage.setItem(LS_USER_WAITING_LIST,JSON.stringify(arr));}
+
+
+const curr=getCurrent();if(!curr||curr.email===undefined){showToast('Please login first','error');location.href='auth.html';}
+const service=localStorage.getItem('selected_service');if(!service){showToast('Please select a service first','error');location.href='services.html';}
+
+/* ---------- PRICES & TIMERS ---------- */
+const SERVICE_PRICES={'Wash':60,'Dry':60,'Wash & Dry':110};
+const MACHINE_TIMERS={'Wash':2,'Dry':2,'Wash & Dry_WashStage':2,'Wash & Dry_DryStage':2}; // Minutes (for testing)
+const DELIVERY_FEE=20,BASE_WEIGHT_BLOCK=8;
+
+let summaryHtml = `<div><strong>${service}</strong></div><div class="small">Base price: ₱${SERVICE_PRICES[service]} per ${BASE_WEIGHT_BLOCK} kg</div>`;
+if (service === 'Wash & Dry') {
+  summaryHtml += '<div class="stage-info">Current Stage: Wash (Auto-transition to Dry after wash completes)</div>';
+}
+document.getElementById('summary').innerHTML = summaryHtml;
+
+/* ---------- CALC TOTAL ---------- */
+function calcTotal(){
+  const w=Number(document.getElementById('weight').value||BASE_WEIGHT_BLOCK);
+  const q=Number(document.getElementById('qty').value||1);
+  const pd=document.getElementById('pickup-deliver').value;
+  const blocks=Math.max(1,Math.ceil(w/BASE_WEIGHT_BLOCK));
+  const base=SERVICE_PRICES[service]*blocks*q;
+  const delivery=pd==='deliver'?DELIVERY_FEE:0;
+  const total=base+delivery;
+  document.getElementById('total').textContent='₱'+total;
+  
+  let estMinutes=0;
+  if(service==='Wash'){estMinutes=MACHINE_TIMERS['Wash'];}
+  else if(service==='Dry'){estMinutes=MACHINE_TIMERS['Dry'];}
+  else if(service==='Wash & Dry'){estMinutes=MACHINE_TIMERS['Wash & Dry_WashStage'] + MACHINE_TIMERS['Wash & Dry_DryStage'];}
+  const totalMs=estMinutes * 60 * 1000; // Parallel execution, no * q for time
+  const completion=new Date(Date.now() + totalMs);
+  document.getElementById('estimated-time').textContent=completion.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  document.getElementById('current-stage').textContent = service === 'Wash & Dry' ? 'Wash stage (auto-transition to dry after ~2 minutes)' : '';
+  
+  return{total,totalEstimatedMs:totalMs};
+}
+['weight','qty','pickup-deliver'].forEach(id=>document.getElementById(id).addEventListener('input',calcTotal));
+calcTotal();
+
+/* ---------- RESERVATION (UPDATED FOR MULTI-MACHINE BASED ON QTY) ---------- */
+function reserveMachines(service,email,totalEstimatedMs,qty){
+  const machines=getMachines();const expiry=Date.now()+(15*60*1000);let reserved=[];
+  let updated=[...machines];
+  const now = Date.now();
+  updated = updated.map(m => {
+    if (m.status === 'Reserved' && now >= m.reservationExpiry) {
+      m.status = 'Available';
+      m.reservedBy = undefined;
+      m.reservationExpiry = undefined;
+      m.currentTransaction = undefined; // Ensure currentTransaction is cleared
+      return m;
+    }
+    return m;
+  });
+  const availWash=updated.filter(m=>m.type==='washer'&&m.status==='Available');
+  const availDry=updated.filter(m=>m.type==='dryer'&&m.status==='Available');
+  
+  let allocatedWasherIds = [];
+  let allocatedDryerIds = [];
+
+  if(service==='Wash'){
+    if(availWash.length < qty)return{success:false,message:`Only ${availWash.length} washers available (need ${qty})`,type:'waiting_list', queuedFor: 'washer'};
+    allocatedWasherIds = availWash.slice(0, qty).map(w => w.id);
+    availWash.slice(0, qty).forEach(washer => {
+      washer.status='Reserved';
+      washer.reservedBy=email;
+      washer.reservationExpiry=expiry;
+      reserved.push(washer.id);
+    });
+  }
+  else if(service==='Dry'){
+    if(availDry.length < qty)return{success:false,message:`Only ${availDry.length} dryers available (need ${qty})`,type:'waiting_list', queuedFor: 'dryer'};
+    allocatedDryerIds = availDry.slice(0, qty).map(d => d.id);
+    availDry.slice(0, qty).forEach(dryer => {
+      dryer.status='Reserved';
+      dryer.reservedBy=email;
+      dryer.reservationExpiry=expiry;
+      reserved.push(dryer.id);
+    });
+  }
+  else if(service==='Wash & Dry'){
+    if(availWash.length < qty)return{success:false,message:`Only ${availWash.length} washers available for Wash & Dry (need ${qty})`,type:'waiting_list', queuedFor: 'washer'};
+    allocatedWasherIds = availWash.slice(0, qty).map(w => w.id);
+    availWash.slice(0, qty).forEach(washer => {
+      washer.status='Reserved';
+      washer.reservedBy=email;
+      washer.reservationExpiry=expiry;
+      reserved.push(washer.id);
+    });
+  }
+  
+  if(reserved.length>0){
+    saveMachines(updated);
+    return{
+      success:true,
+      reservedMachineIds:reserved,
+      updatedMachines:updated,
+      allocatedWasherIds: allocatedWasherIds,
+      allocatedDryerIds: allocatedDryerIds
+    };
+  }
+  return{success:false,message:'Reservation failed',type:'waiting_list'};
+}
+
+/* ---------- AUTO-TRANSITION WASH TO DRY (for current draft, UPDATED FOR MULTI-MACHINE) ---------- */
+function autoTransitionWashToDryForDraft() {
+  let draft = getLocalStorageItem('transaction_draft', 'null');
+  if (!draft || draft.service !== 'Wash & Dry' || draft.currentMachineStage !== 'wash') return;
+  
+  const now = Date.now();
+  const washDone = new Date(draft.washCompletionTime).getTime();
+
+  if (now < washDone) {
+    // Wash is still in progress
+    const washersInfo = draft.allocatedWasherIds ? draft.allocatedWasherIds.join(', ') : 'N/A';
+    document.getElementById('current-stage').textContent = `Wash stage (finishes at ${new Date(washDone).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})})`;
+        document.getElementById('reserved-machines-info').textContent = `Machines: Washers ${washersInfo} (in use)`;
+    return;
+  }
+
+  // Wash is finished, attempt to transition to dry
+  let machines = getMachines();
+  let machinesChanged = false;
+
+  // First, release all washers
+  draft.allocatedWasherIds.forEach(washerId => {
+    const washer = machines.find(m => m.id === washerId);
+    if (washer && washer.currentTransaction === draft.id) {
+      washer.status = 'Available';
+      washer.currentTransaction = undefined;
+      washer.reservedBy = undefined;
+      washer.reservationExpiry = undefined;
+      machinesChanged = true;
+    }
+  });
+
+  const availDry = machines.filter(m => m.type === 'dryer' && m.status === 'Available');
+  // MODIFICATION START: Ensure enough dryers for the quantity
+  if (availDry.length >= draft.qty) {
+    // Allocate qty dryers
+    const allocatedDryers = availDry.slice(0, draft.qty);
+    allocatedDryers.forEach(dryer => {
+      dryer.status = 'In Use';
+      dryer.currentTransaction = draft.id;
+      dryer.reservedBy = curr.email;
+      dryer.reservationExpiry = now + (MACHINE_TIMERS['Dry'] * 60 * 1000); // Per dryer, parallel
+      machinesChanged = true;
+    });
+
+    draft.currentMachineStage = 'dry';
+    draft.currentMachineIds = allocatedDryers.map(d => d.id);
+    draft.stageStartTime = new Date().toISOString();
+    draft.stageCompletionTime = new Date(now + MACHINE_TIMERS['Wash & Dry_DryStage'] * 60 * 1000).toISOString();
+    draft.allocatedDryerIds = allocatedDryers.map(d => d.id);
+    draft.dryCompletionTime = draft.stageCompletionTime;
+    draft.estimatedCompletion = draft.dryCompletionTime;
+
+    localStorage.setItem('transaction_draft', JSON.stringify(draft));
+    showToast(`Washers finished! Automatically moved to Dryers ${draft.allocatedDryerIds.join(', ')}.`, 'success');
+    const dryersInfo = draft.allocatedDryerIds.join(', ');
+    document.getElementById('current-stage').textContent = `Drying stage (finishes at ${new Date(draft.dryCompletionTime).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})})`;
+    document.getElementById('reserved-machines-info').textContent = `Machines: Washers ${draft.allocatedWasherIds.join(', ')} (completed), Dryers ${dryersInfo} (in use)`;
+
+  } else {
+    // No enough dryers available, add to user-specific waiting list
+    draft.status = 'Queued'; // Change status to Queued
+    draft.currentMachineStage = 'waiting_dry';
+    draft.currentMachineIds = []; // Clear current machine IDs
+    draft.stageStartTime = null;
+    draft.stageCompletionTime = null;
+    draft.allocatedDryerIds = []; // Clear allocated dryer
+    draft.estimatedCompletion = null; // Clear estimated completion until dryer is found
+    draft.queuedFor = 'dryer'; // Indicate it's queued for a dryer
+    draft.timeline = draft.timeline || [];
+    draft.timeline.push({t: new Date().toISOString(), status: 'Wash Complete, Waiting for Dryer'});
+    
+    // Add to user-specific waiting list (if not already there)
+    let userWaitingList = getUserWaitingList();
+    if (!userWaitingList.find(item => item.id === draft.id)) {
+      userWaitingList.push(draft);
+      saveUserWaitingList(userWaitingList);
+    }
+    // Remove from main transaction_draft as it's now in queue
+    localStorage.removeItem('transaction_draft');
+
+    showToast(`Wash complete, but only ${availDry.length} dryers available (need ${draft.qty}). Added to waiting list.`, 'warning');
+    document.getElementById('current-stage').textContent = 'Waiting for Dryer';
+    document.getElementById('reserved-machines-info').textContent = `Machines: Washers ${draft.allocatedWasherIds.join(', ')} (completed), Waiting for ${draft.qty} Dryers`;
+  }
+  // MODIFICATION END
+
+  if (machinesChanged) saveMachines(machines);
+}
+
+/* ---------- CLEANUP ---------- */
+function cleanupExpired() {
+  const now = Date.now();
+  let machines = getMachines();
+  let machinesChanged = false;
+
+  machines = machines.map(m => {
+    if (m.status === 'Reserved' && now >= m.reservationExpiry) {
+      m.status = 'Available';
+      m.reservedBy = undefined;
+      m.reservationExpiry = undefined;
+      m.currentTransaction = undefined;
+      machinesChanged = true;
+      console.log(`Expired reservation freed: ${m.id}`);
+    }
+    return m;
+  });
+  if (machinesChanged) saveMachines(machines);
+
+  // Also clean up expired items from user waiting list if necessary (e.g., if a reservation was made and expired before payment)
+  // For now, we assume items in userWaitingList are actively waiting for allocation, not reserved.
+  // If a draft was reserved and then moved to waiting list, its reservation would have been cleared.
+  // So, no specific cleanup for userWaitingList based on reservationExpiry here.
+}
+
+/* ---------- PROCEED TO PAYMENT (UPDATED FOR MULTI-MACHINE) ---------- */
+document.getElementById('proceed-btn').onclick=()=>{
+  document.getElementById('loading-overlay').classList.remove('hidden');
+  setTimeout(()=>{
+    try{
+      const {total,totalEstimatedMs} = calcTotal();
+      const q = Number(document.getElementById('qty').value || 1);
+      const user = getCurrent();
+      const res = reserveMachines(service, user.email, totalEstimatedMs, q);
+
+      if(!res.success){
+        // If reservation failed, add to user-specific waiting list
+        let draft = {
+          id: 'T' + Math.floor(Math.random()*9000+1000),
+          service,
+          weight: Number(document.getElementById('weight').value),
+          qty: q,
+          pickup: document.getElementById('pickup-deliver').value,
+          total,
+          status: 'Queued',
+          createdAt: new Date().toISOString(),
+          userEmail: user.email,
+          queuedFor: res.queuedFor || 'machine', // 'washer', 'dryer', or 'machine'
+          timeline: [{t:new Date().toISOString(),status:`Queued for ${res.queuedFor || 'machine'}`}]
+        };
+        let userWaitingList = getUserWaitingList();
+        userWaitingList.push(draft);
+        saveUserWaitingList(userWaitingList);
+        localStorage.removeItem('transaction_draft'); // Clear draft as it's now in queue
+
+        showToast(res.message || 'No machines available. Added to waiting list.','warning');
+        document.getElementById('loading-overlay').classList.add('hidden');
+        location.href='transactions.html'; // Redirect to transactions to show queued item
+        return;
+      }
+
+      // If reservation was successful, proceed to create draft for payment
+      let draft = {
+        id: 'T' + Math.floor(Math.random()*9000+1000),
+        service,
+        weight: Number(document.getElementById('weight').value),
+        qty: q,
+        pickup: document.getElementById('pickup-deliver').value,
+        total,
+        status: 'Pending Payment',
+        createdAt: new Date().toISOString(),
+        reservedMachines: res.reservedMachineIds, // These are the machines reserved for payment
+        userEmail: user.email,
+
+        currentMachineStage: null,
+        currentMachineIds: null, // Array of IDs for current stage
+        stageStartTime: null,
+        stageCompletionTime: null,
+
+        allocatedWasherIds: res.allocatedWasherIds || [],
+        allocatedDryerIds: res.allocatedDryerIds || [],
+        washCompletionTime: null,
+        dryCompletionTime: null,
+        estimatedCompletion: null
+      };
+
+      // Set initial machine stage and completion times for the draft
+      if(service === 'Wash'){
+        draft.currentMachineStage = 'wash';
+        draft.currentMachineIds = res.allocatedWasherIds;
+        draft.stageStartTime = new Date().toISOString();
+        draft.stageCompletionTime = new Date(Date.now() + MACHINE_TIMERS['Wash'] * 60 * 1000).toISOString();
+        draft.washCompletionTime = draft.stageCompletionTime;
+        draft.estimatedCompletion = draft.stageCompletionTime;
+      } else if(service === 'Dry'){
+        draft.currentMachineStage = 'dry';
+        draft.currentMachineIds = res.allocatedDryerIds;
+        draft.stageStartTime = new Date().toISOString();
+        draft.stageCompletionTime = new Date(Date.now() + MACHINE_TIMERS['Dry'] * 60 * 1000).toISOString();
+        draft.dryCompletionTime = draft.stageCompletionTime;
+        draft.estimatedCompletion = draft.stageCompletionTime;
+      } else if(service === 'Wash & Dry'){
+        draft.currentMachineStage = 'wash';
+        draft.currentMachineIds = res.allocatedWasherIds;
+        draft.stageStartTime = new Date().toISOString();
+        draft.stageCompletionTime = new Date(Date.now() + MACHINE_TIMERS['Wash & Dry_WashStage'] * 60 * 1000).toISOString();
+        draft.washCompletionTime = draft.stageCompletionTime;
+        draft.estimatedCompletion = new Date(Date.now() + (MACHINE_TIMERS['Wash & Dry_WashStage'] + MACHINE_TIMERS['Wash & Dry_DryStage']) * 60 * 1000).toISOString();
+      }
+
+      localStorage.setItem('transaction_draft', JSON.stringify(draft));
+
+      document.getElementById('loading-overlay').classList.add('hidden');
+      showToast('Transaction draft saved. Proceeding to payment...','success');
+      location.href='payment.html';
+    }catch(e){
+      console.error(e);
+      showToast('Error: '+e.message,'error');
+      document.getElementById('loading-overlay').classList.add('hidden');
+    }
+  },1200);
+};
+
+/* ---------- INITIAL RENDER OF DRAFT STATUS (UPDATED FOR MULTI-MACHINE) ---------- */
+function renderDraftStatus() {
+  const draft = getLocalStorageItem('transaction_draft', 'null');
+  if (draft) {
+    let machineInfo = '';
+    let stageInfo = '';
+    if (draft.service === 'Wash & Dry') {
+      if (draft.currentMachineStage === 'wash' && draft.currentMachineIds && draft.currentMachineIds.length > 0) {
+        stageInfo = `Wash stage (finishes at ${new Date(draft.stageCompletionTime).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})})`;
+        machineInfo = `Machines: Washers ${draft.currentMachineIds.join(', ')} (in use)`;
+      } else if (draft.currentMachineStage === 'dry' && draft.currentMachineIds && draft.currentMachineIds.length > 0) {
+        stageInfo = `Drying stage (finishes at ${new Date(draft.stageCompletionTime).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})})`;
+        machineInfo = `Machines: Washers ${draft.allocatedWasherIds.join(', ')} (completed), Dryers ${draft.currentMachineIds.join(', ')} (in use)`;
+      } else if (draft.currentMachineStage === 'waiting_dry') {
+        stageInfo = 'Waiting for Dryer';
+        machineInfo = `Machines: Washers ${draft.allocatedWasherIds.join(', ')} (completed), Waiting for ${draft.qty} Dryers`;
+      }
+    } else if (draft.service === 'Wash' && draft.currentMachineIds && draft.currentMachineIds.length > 0) {
+      stageInfo = `Wash stage (finishes at ${new Date(draft.stageCompletionTime).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})})`;
+      machineInfo = `Machines: Washers ${draft.currentMachineIds.join(', ')} (in use)`;
+    } else if (draft.service === 'Dry' && draft.currentMachineIds && draft.currentMachineIds.length > 0) {
+      stageInfo = `Dry stage (finishes at ${new Date(draft.stageCompletionTime).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})})`;
+      machineInfo = `Machines: Dryers ${draft.currentMachineIds.join(', ')} (in use)`;
+    }
+    document.getElementById('current-stage').textContent = stageInfo;
+    document.getElementById('reserved-machines-info').textContent = machineInfo;
+  }
+}
+
+/* ---------- INTERVALS ---------- */
+setInterval(cleanupExpired,10000);
+setInterval(autoTransitionWashToDryForDraft,5000); // Check every 5 seconds
+renderDraftStatus(); // Initial render
+</script>
+</body>
+</html>

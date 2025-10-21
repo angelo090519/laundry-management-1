@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Thia & Nicole Laundry - My Transactions</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="toast.css">
+<style>
+  :root{--bg:#f4f7fb;--card:#fff;--primary:#1766ff;--muted:#6b7280;}
+   body{
+    margin: 0;
+    font-family: Inter, system-ui, Arial;
+    background: url('https://images.unsplash.com/photo-1696546761269-a8f9d2b80512?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE4fHx8ZW58MHx8fHx8&ixlib=rb-4.1.0&q=60&w=3000') no-repeat center center/cover fixed;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(188, 200, 224, 0.4), rgba(0,0,0,0.3));
+    z-index: 0;
+  }
+  .floating-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(174, 200, 226, 0.416); /* soft blue */
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 25px rgba(31, 31, 31, 0.2);
+    pointer-events: none;
+    animation: floatBubble linear infinite alternate;
+    z-index: 1;
+  } 
+    /* 15 bubbles, scattered & elegant */
+    .bubble1  { width:120px; height:120px; top:10%; left:8%;   animation: floatBubble 8s ease-in-out infinite; }
+    .bubble2  { width:200px; height:200px; bottom:25%; left:12%; animation: floatBubble 5s ease-in-out infinite 2s;}
+    .bubble3  { width:90px;  height:90px;  top:5%;  left:75%;  animation: floatBubble 6s ease-in-out infinite 2s; }
+    .bubble4  { width:150px; height:150px; bottom:20%; right:20%; animation: floatBubble 10s ease-in-out infinite 4s; }
+    .bubble5  { width:180px; height:180px; bottom:2%; left:8%; animation: floatBubble 7s ease-in-out infinite 4s; }
+    .bubble6  { width:100px; height:100px; top:50%; right:5%;   animation: floatBubble 9s ease-in-out infinite 3s; }
+    .bubble7  { width:130px; height:130px; bottom:8%; right:8%; animation: floatBubble 3s ease-in-out infinite 3s; }
+    .bubble8  { width:160px; height:160px; top:38%; left:55%; animation: floatBubble 3s ease-in-out infinite 3s; }
+    .bubble9  { width:110px; height:110px; top:18%; left:20%; animation: floatBubble 5s ease-in-out infinite 3s; }
+    .bubble10 { width:140px; height:140px; bottom:15%; left:65%; animation: floatBubble 2s ease-in-out infinite 2s; }
+    .bubble11 { width:170px; height:170px; bottom:0%; right:60%; animation: floatBubble 3s ease-in-out infinite 1s; }
+    .bubble12 { width:100px; height:100px; bottom:0%; left:25%; animation: floatBubble 8s ease-in-out infinite 4s; }
+    .bubble13 { width:190px; height:190px; top:4%; right:5%; animation: floatBubble 6s ease-in-out infinite 2s; }
+    .bubble14 { width:80px;  height:80px;  top:60%; left:30%; animation: floatBubble 5s ease-in-out infinite 5s; }
+    .bubble15 { width:150px; height:150px; bottom:90%; right:45%; animation: floatBubble 3s ease-in-out infinite 2s; }
+    @keyframes floatBubble {
+        0%   { transform: translateY(0) translateX(0); opacity: 0.7; }
+        50%  { transform: translateY(-40px) translateX(20px); opacity: 1; }
+        100% { transform: translateY(0) translateX(0); opacity: 0.7; }
+  }
+  .app{max-width:760px;margin:20px auto;padding:18px; position: relative; z-index: 10;}
+  .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06);margin-bottom:14px}
+  .btn{padding:8px 12px;border-radius:8px;background:var(--primary);color:#fff;border:none;cursor:pointer;font-size:13px}
+  .btn.alt{background:#eef2ff;color:var(--primary)}
+  .btn.paid{background:#16a34a;cursor:default;}
+  .btn.unpaid{background:#dc2626;}
+  .transaction-item{border:1px solid #eee;border-radius:12px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center; flex-wrap: wrap;}
+  .small{font-size:13px;color:var(--muted)}
+  .timeline{margin-top:6px;font-size:12px;color:#555;line-height:1.4}
+  .transaction-details {
+    flex-grow: 1;
+    min-width: 200px;
+  }
+  .transaction-status {
+    text-align: right;
+    min-width: 120px;
+    margin-left: 10px;
+  }
+  .transaction-actions {
+    width: 100%;
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 480px) {
+    .transaction-status {
+      text-align: left;
+      margin-left: 0;
+      width: 100%;
+    }
+    .transaction-actions {
+      justify-content: flex-start;
+    }
+  }
+  /* Styles for payment modal/form */
+  .payment-modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    justify-content: center;
+    align-items: center;
+  }
+  .payment-modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    position: relative;
+  }
+  .close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  .close-button:hover,
+  .close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .payment-modal-content h3 {
+    margin-top: 0;
+    color: var(--primary);
+  }
+  .payment-modal-content .payment-options {
+    margin-bottom: 15px;
+  }
+  .payment-modal-content .gcash-qr-container {
+    border: none;
+    background: none;
+    padding: 0;
+    margin-top: 10px;
+  }
+  .payment-modal-content .gcash-qr-container img {
+    width: 100px;
+    height: 100px;
+  }
+  .payment-modal-content .gcash-qr-container label {
+    margin-top: 10px;
+  }
+  .payment-modal-content .gcash-qr-container input[type="file"] {
+    margin-top: 5px;
+    width: 100%;
+  }
+  .payment-modal-content .btn {
+    width: 100%;
+    margin-top: 10px;
+  }
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    flex-direction: column;
+  }
+  .loading-overlay .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .loading-overlay p {
+    margin-top: 15px;
+    font-size: 16px;
+    color: var(--primary);
+  }
+</style>
+</head>
+<body>
+  <div class="floating-bubble bubble1"></div>
+    <div class="floating-bubble bubble2"></div>
+    <div class="floating-bubble bubble3"></div>
+    <div class="floating-bubble bubble4"></div>
+    <div class="floating-bubble bubble5"></div>
+    <div class="floating-bubble bubble6"></div>
+    <div class="floating-bubble bubble7"></div>
+    <div class="floating-bubble bubble8"></div>
+    <div class="floating-bubble bubble9"></div>
+    <div class="floating-bubble bubble10"></div>
+    <div class="floating-bubble bubble11"></div>
+    <div class="floating-bubble bubble12"></div>
+    <div class="floating-bubble bubble13"></div>
+    <div class="floating-bubble bubble14"></div>
+    <div class="floating-bubble bubble15"></div>
+<div class="app">
+
+  <div class="card">
+    <h2><i class="fas fa-receipt"></i> My Transactions</h2>
+    <div id="transaction-list" style="margin-top:14px"></div>
+    <div style="margin-top:14px">
+      <button class="btn alt" onclick="location.href='home.html'"><i class="fas fa-arrow-left"></i> Back to Home</button>
+    </div>
+  </div>
+
+  <!-- Queued Transactions Section -->
+  <div class="card" style="margin-top: 15px;">
+    <h2><i class="fas fa-hourglass-half"></i> My Queued Transactions</h2>
+    <div id="queued-transaction-list" style="margin-top:14px"></div>
+  </div>
+
+</div>
+
+<!-- Payment Modal -->
+<div id="payment-modal" class="payment-modal">
+  <div class="payment-modal-content">
+    <span class="close-button" onclick="closePaymentModal()">&times;</span>
+    <h3>Complete Payment for <span id="modal-transaction-id"></span></h3>
+    <div class="small">Total Amount: <span id="modal-total-amount" style="font-weight:700;"></span></div>
+
+    <label style="margin-top: 15px;">Choose method:</label>
+    <div class="payment-options">
+      <button class="btn" onclick="processModalPayment('Cash')"><i class="fas fa-money-bill-alt"></i> Cash</button>
+      <button class="btn alt" onclick="showModalGcashForm()"><i class="fas fa-wallet"></i> GCash</button>
+    </div>
+
+    <div id="modal-gcash-box" class="gcash-qr-container" style="display:none;">
+      <img src="/di.jpg" alt="GCash QR">
+      <div class="small">Scan GCash QR to pay</div>
+      <label for="modal-gcash-proof" style="margin-top: 10px;">Upload GCash Payment Screenshot:</label>
+      <input type="file" id="modal-gcash-proof" accept="image/*">
+      <button class="btn" onclick="processModalPayment('GCash')">Confirm GCash Payment</button>
+    </div>
+  </div>
+</div>
+
+<script src="toast.js"></script>
+<script>
+/* ---------- HELPERS ---------- */
+const LS_CURR = 'tn_current_v1';
+const LS_USERS = 'tn_accounts_v2';
+const LS_MACH = 'tn_machines_v1';
+const LS_WAITING_LIST = 'tn_waiting_list_v1'; // Global waiting list (for admin)
+const LS_USER_WAITING_LIST = 'tn_user_waiting_v1'; // User-specific waiting list
+
+// Helper to safely get JSON from localStorage
+function getLocalStorageItem(key, defaultValue = '[]') {
+    try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : JSON.parse(defaultValue);
+    } catch (e) {
+        console.error(`Error parsing localStorage item "${key}":`, e);
+        showToast(`Error loading data for ${key}. Please clear browser cache.`, 'error');
+        return JSON.parse(defaultValue);
+    }
+}
+
+function getUsers(){return getLocalStorageItem(LS_USERS, '[]');}
+function saveUsers(arr){localStorage.setItem(LS_USERS,JSON.stringify(arr));}
+function getMachines(){return getLocalStorageItem(LS_MACH, '[]');}
+function saveMachines(arr){localStorage.setItem(LS_MACH,JSON.stringify(arr));}
+function getUserWaitingList(){return getLocalStorageItem(LS_USER_WAITING_LIST,'[]');}
+function saveUserWaitingList(arr){localStorage.setItem(LS_USER_WAITING_LIST,JSON.stringify(arr));}
+function getCurrent(){return getLocalStorageItem(LS_CURR, 'null');}
+
+// Define MACHINE_TIMERS here as well for consistency
+const MACHINE_TIMERS={'Wash':2,'Dry':2,'Wash & Dry_WashStage':2,'Wash & Dry_DryStage':2}; // Minutes (for testing)
+
+/* ---------- INIT PAGE ---------- */
+const curr = getCurrent();
+if(!curr || curr.email === undefined){
+  showToast('Please login first', 'error');
+  location.href='auth.html';
+}
+
+let users, user, transactions, machines;
+let currentTransactionToPay = null; // To store the transaction being paid in the modal
+
+/* ---------- PAYMENT MODAL FUNCTIONS ---------- */
+function openPaymentModal(transactionId) {
+  currentTransactionToPay = null; // Reset
+  users = getUsers();
+  user = users.find(u => u.email === curr.email);
+  transactions = user?.transactions || [];
+  let userWaitingList = getUserWaitingList();
+
+  // Find the transaction either in main transactions or queued transactions
+  let transaction = transactions.find(o => o.id === transactionId);
+  if (!transaction) {
+    transaction = userWaitingList.find(o => o.id === transactionId);
+  }
+
+  if (!transaction) {
+    showToast('Transaction not found for payment.', 'error');
+    return;
+  }
+
+  currentTransactionToPay = transaction;
+  document.getElementById('modal-transaction-id').textContent = transaction.id;
+  document.getElementById('modal-total-amount').textContent = '₱' + transaction.total;
+  document.getElementById('payment-modal').style.display = 'flex';
+  hideAllModalPaymentForms(); // Ensure only payment options are visible initially
+}
+
+function closePaymentModal() {
+  document.getElementById('payment-modal').style.display = 'none';
+  currentTransactionToPay = null;
+  // Clear file input for GCash proof
+  document.getElementById('modal-gcash-proof').value = '';
+}
+
+function hideAllModalPaymentForms() {
+  document.getElementById('modal-gcash-box').style.display = 'none';
+}
+
+function showModalGcashForm() {
+  hideAllModalPaymentForms();
+  document.getElementById('modal-gcash-box').style.display = 'block';
+}
+
+function processModalPayment(method) {
+  if (!currentTransactionToPay) {
+    showToast('No transaction selected for payment.', 'error');
+    return;
+  }
+
+  // Simulate loading
+  const loadingOverlay = document.createElement('div');
+  loadingOverlay.className = 'loading-overlay';
+  loadingOverlay.innerHTML = '<div class="spinner"></div><p>Processing payment...</p>';
+  document.body.appendChild(loadingOverlay);
+
+  if (method === 'GCash') {
+    const gcashProofInput = document.getElementById('modal-gcash-proof');
+    if (!gcashProofInput.files || gcashProofInput.files.length === 0) {
+      showToast('Please upload your GCash payment screenshot.', 'error');
+      loadingOverlay.remove();
+      return;
+    }
+
+    const file = gcashProofInput.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      currentTransactionToPay.gcashProof = e.target.result; // Store Base64 string
+      finalizeModalPayment(method, loadingOverlay);
+    };
+    reader.onerror = (error) => {
+      console.error("Error reading file:", error);
+      showToast('Failed to read GCash screenshot. Please try again.', 'error');
+      loadingOverlay.remove();
+    };
+    reader.readAsDataURL(file);
+  } else {
+    finalizeModalPayment(method, loadingOverlay);
+  }
+}
+
+function finalizeModalPayment(method, loadingOverlay) {
+  setTimeout(() => {
+    try {
+      let users = getUsers();
+      const userIdx = users.findIndex(u => u.email === curr.email);
+      if (userIdx === -1) {
+        showToast('User  not found. Please log in again.', 'error');
+        loadingOverlay.remove();
+        location.href = 'auth.html';
+        return;
+      }
+
+      let transactionFoundInMainList = false;
+      let transactionIdx = users[userIdx].transactions.findIndex(o => o.id === currentTransactionToPay.id);
+      if (transactionIdx !== -1) {
+        // Transaction is in the main list
+        users[userIdx].transactions[transactionIdx].paidWith = method;
+        if (method === 'Cash') {
+          users[userIdx].transactions[transactionIdx].status = 'Pending'; // Now paid, ready for processing
+          users[userIdx].transactions[transactionIdx].timeline.push({t:new Date().toISOString(),status:'Paid (Cash)'});
+        } else if (method === 'GCash') {
+          users[userIdx].transactions[transactionIdx].status = 'Pending GCash Verification';
+          users[userIdx].transactions[transactionIdx].gcashProof = currentTransactionToPay.gcashProof;
+          users[userIdx].transactions[transactionIdx].timeline.push({t:new Date().toISOString(),status:'Payment Pending (GCash Verification)'});
+        }
+        transactionFoundInMainList = true;
+      } else {
+        // Check if transaction is in the user's waiting list
+        let userWaitingList = getUserWaitingList();
+        const waitingTransactionIdx = userWaitingList.findIndex(o => o.id === currentTransactionToPay.id && o.userEmail === curr.email);
+        if (waitingTransactionIdx !== -1) {
+          // Update the transaction in the waiting list
+          userWaitingList[waitingTransactionIdx].paidWith = method;
+          if (method === 'Cash') {
+            userWaitingList[waitingTransactionIdx].status = 'Queued'; // Still queued, but now paid
+            userWaitingList[waitingTransactionIdx].timeline.push({t:new Date().toISOString(),status:'Paid (Cash)'});
+          } else if (method === 'GCash') {
+            userWaitingList[waitingTransactionIdx].status = 'Queued - Pending GCash Verification'; // New status for queued items
+            userWaitingList[waitingTransactionIdx].gcashProof = currentTransactionToPay.gcashProof;
+            userWaitingList[waitingTransactionIdx].timeline.push({t:new Date().toISOString(),status:'Payment Pending (GCash Verification)'});
+          }
+          saveUserWaitingList(userWaitingList);
+        } else {
+          showToast('Transaction not found in any list.', 'error');
+          loadingOverlay.remove();
+          return;
+        }
+      }
+
+      saveUsers(users);
+
+      showToast('Payment processed successfully!', 'success');
+      closePaymentModal();
+      renderTransactions(); // Re-render to reflect changes
+    } catch (e) {
+      console.error("Error during modal payment finalization:", e);
+      showToast('An unexpected error occurred during payment. Please try again.', 'error');
+    } finally {
+      loadingOverlay.remove();
+    }
+  }, 1000);
+}
+
+
+/* ---------- RENDER TRANSACTIONS ---------- */
+const list = document.getElementById('transaction-list');
+const queuedList = document.getElementById('queued-transaction-list');
+
+function renderTransactions() {
+  list.innerHTML = '';
+  queuedList.innerHTML = '';
+
+  users = getUsers();
+  user = users.find(u=>u.email===curr.email);
+  transactions = user?.transactions||[];
+  machines = getMachines();
+  let userWaitingList = getUserWaitingList();
+
+  const currentUserQueuedTransactions = userWaitingList.filter(item => item.userEmail === curr.email);
+
+  if(transactions.length===0 && currentUserQueuedTransactions.length === 0){
+    list.innerHTML = '<div class="small">No transactions yet</div>';
+    queuedList.innerHTML = '<div class="small">No transactions in queue.</div>';
+    return;
+  }
+
+  const sortedTransactions = transactions.slice().sort((a,b)=>{
+    return new Date(b.createdAt || b.timeline?.[0]?.t || 0) - new Date(a.createdAt || a.timeline?.[0]?.t || 0);
+  });
+
+  if (sortedTransactions.length > 0) {
+    sortedTransactions.forEach(o=>{
+      const item = document.createElement('div');
+      item.className='transaction-item';
+
+      let machineInfo = '';
+      if (o.reservedMachines && o.reservedMachines.length > 0) {
+          const machineNames = o.reservedMachines.map(resId => {
+              const machine = machines.find(m => m.id === resId);
+              return machine ? machine.name : resId;
+          }).join(', ');
+          machineInfo = `<div class="small">Machines: ${machineNames}</div>`;
+      } else if (o.allocatedWasherIds && o.allocatedWasherIds.length > 0) {
+          const washerNames = o.allocatedWasherIds.map(resId => {
+              const machine = machines.find(m => m.id === resId);
+              return machine ? machine.name : resId;
+          }).join(', ');
+          machineInfo = `<div class="small">Washers: ${washerNames}</div>`;
+      }
+      if (o.allocatedDryerIds && o.allocatedDryerIds.length > 0) {
+          const dryerNames = o.allocatedDryerIds.map(resId => {
+              const machine = machines.find(m => m.id === resId);
+              return machine ? machine.name : resId;
+          }).join(', ');
+          machineInfo += `<div class="small">Dryers: ${dryerNames}</div>`;
+      }
+
+      let currentStageDisplay = '';
+      if (o.service === 'Wash & Dry') {
+        if (o.currentMachineStage === 'wash' && o.currentMachineIds && o.currentMachineIds.length > 0) {
+          currentStageDisplay = `<div class="small">Stage: Washing in ${o.currentMachineIds.join(', ')}</div>`;
+        } else if (o.currentMachineStage === 'dry' && o.currentMachineIds && o.currentMachineIds.length > 0) {
+          currentStageDisplay = `<div class="small">Stage: Drying in ${o.currentMachineIds.join(', ')}</div>`;
+        } else if (o.currentMachineStage === 'waiting_dry') {
+          currentStageDisplay = `<div class="small" style="color: orange;">Stage: Wash Complete, Waiting for Dryer</div>`;
+        }
+      } else if (o.currentMachineStage && o.currentMachineIds && o.currentMachineIds.length > 0) {
+        currentStageDisplay = `<div class="small">Stage: ${o.currentMachineStage.charAt(0).toUpperCase() + o.currentMachineStage.slice(1)} in ${o.currentMachineIds.join(', ')}</div>`;
+      }
+
+      let estimatedCompletionInfo = '';
+      if (o.estimatedCompletion) {
+          const completionDate = new Date(o.estimatedCompletion);
+          estimatedCompletionInfo = `<div class="small">Est. Completion: ${completionDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>`;
+      } else if (o.status === 'Waiting for Dryer' || o.currentMachineStage === 'waiting_dry') {
+          estimatedCompletionInfo = `<div class="small">Est. Completion: TBD (Waiting for Dryer)</div>`;
+      }
+
+      let estimatedPickupInfo = '';
+      if (o.pickup === 'pickup' && o.estimatedCompletion) {
+          const pickupDate = new Date(o.estimatedCompletion);
+          estimatedPickupInfo = `<div class="small">Est. Pickup: ${pickupDate.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</div>`;
+      } else if (o.pickup === 'deliver' && o.estimatedCompletion) {
+          const deliveryDate = new Date(o.estimatedCompletion);
+          estimatedPickupInfo = `<div class="small">Est. Delivery: ${deliveryDate.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</div>`;
+      }
+
+      let paymentStatusDisplay = '';
+      if (o.paidWith) {
+        paymentStatusDisplay = `<button class="btn paid"><i class="fas fa-check"></i> Paid (${o.paidWith})</button>`;
+      } else if (o.status === 'Pending GCash Verification') {
+        paymentStatusDisplay = `<button class="btn unpaid" style="background-color: #ffc107; color: #333; cursor: default;"><i class="fas fa-hourglass-half"></i> GCash Pending Verification</button>`;
+      } else {
+        paymentStatusDisplay = `<button class="btn unpaid" onclick="openPaymentModal('${o.id}')"><i class="fas fa-money-bill"></i> Pay Now</button>`;
+      }
+
+      item.innerHTML = `
+        <div class="transaction-details">
+          <strong>${o.service}</strong>
+          <div class="small">Transaction ${o.id}</div>
+          <div class="small">₱${o.total}</div>
+          ${machineInfo}
+          ${currentStageDisplay}
+          ${estimatedCompletionInfo}
+          ${estimatedPickupInfo}
+          <div class="timeline">${(o.timeline||[]).map(t=>`<div>${t.status} (${new Date(t.t).toLocaleString()})</div>`).join('')}</div>
+        </div>
+        <div class="transaction-status">
+          <div class="small">Status: ${o.status}</div>
+        </div>
+        <div class="transaction-actions">
+          ${paymentStatusDisplay}
+          ${(o.status === 'Ready for Pickup' || o.status === 'Ready for Delivery') ? 
+            `<button class="btn" onclick="markTransactionAsReceived('${o.id}')"><i class="fas fa-check-double"></i> Mark as Received</button>` : ''}
+        </div>
+      `;
+      list.appendChild(item);
+    });
+  } else {
+    list.innerHTML = '<div class="small">No active or completed transactions.</div>';
+  }
+
+  if (currentUserQueuedTransactions.length > 0) {
+    currentUserQueuedTransactions.forEach(o => {
+      const item = document.createElement('div');
+      item.className = 'transaction-item';
+
+      let queuedForInfo = '';
+      if (o.queuedFor === 'washer') queuedForInfo = 'Waiting for Washer';
+      else if (o.queuedFor === 'dryer') queuedForInfo = 'Waiting for Dryer';
+      else queuedForInfo = 'Waiting for Machine';
+
+      let estimatedWait = 'TBD';
+      if (o.queuedFor === 'washer') {
+        const availableWashers = machines.filter(m => m.type === 'washer' && m.status === 'Available').length;
+        if (availableWashers > 0) estimatedWait = `~${MACHINE_TIMERS['Wash']} min`;
+      } else if (o.queuedFor === 'dryer') {
+        const availableDryers = machines.filter(m => m.type === 'dryer' && m.status === 'Available').length;
+        if (availableDryers > 0) estimatedWait = `~${MACHINE_TIMERS['Dry']} min`;
+      }
+
+      let queuedPaymentStatusDisplay = '';
+      if (o.paidWith) {
+        queuedPaymentStatusDisplay = `<button class="btn paid"><i class="fas fa-check"></i> Paid (${o.paidWith})</button>`;
+      } else if (o.status === 'Queued - Pending GCash Verification') {
+        queuedPaymentStatusDisplay = `<button class="btn unpaid" style="background-color: #ffc107; color: #333; cursor: default;"><i class="fas fa-hourglass-half"></i> GCash Pending Verification</button>`;
+      } else {
+        queuedPaymentStatusDisplay = `<button class="btn unpaid" onclick="openPaymentModal('${o.id}')"><i class="fas fa-money-bill"></i> Pay Now</button>`;
+      }
+
+      item.innerHTML = `
+        <div class="transaction-details">
+          <strong>${o.service}</strong>
+          <div class="small">Transaction ${o.id}</div>
+          <div class="small">₱${o.total}</div>
+          <div class="small" style="color: orange;">Status: Queued - ${queuedForInfo}</div>
+          <div class="small">Quantity: ${o.qty}</div>
+          <div class="small">Est. Wait: ${estimatedWait}</div>
+          <div class="small">Queued At: ${new Date(o.createdAt).toLocaleString()}</div>
+        </div>
+        <div class="transaction-actions">
+          ${queuedPaymentStatusDisplay}
+          <button class="btn alt" onclick="cancelQueuedTransaction('${o.id}')"><i class="fas fa-times-circle"></i> Cancel Queue</button>
+        </div>
+      `;
+      queuedList.appendChild(item);
+    });
+  } else {
+    queuedList.innerHTML = '<div class="small">No transactions in queue.</div>';
+  }
+}
+
+function cancelQueuedTransaction(transactionId) {
+  if (!confirm(`Are you sure you want to cancel queued transaction ${transactionId}?`)) return;
+
+  let userWaitingList = getUserWaitingList();
+  const initialLength = userWaitingList.length;
+  userWaitingList = userWaitingList.filter(item => item.id !== transactionId);
+
+  if (userWaitingList.length < initialLength) {
+    saveUserWaitingList(userWaitingList);
+    showToast(`Queued transaction ${transactionId} cancelled.`, 'info');
+    renderTransactions();
+  } else {
+    showToast('Queued transaction not found.', 'error');
+  }
+}
+
+function markTransactionAsReceived(transactionId) {
+  if (!confirm(`Are you sure you want to mark transaction ${transactionId} as received?`)) return;
+
+  let users = getUsers();
+  const userIdx = users.findIndex(u => u.email === curr.email);
+  if (userIdx === -1) {
+    showToast('User  not found.', 'error');
+    return;
+  }
+
+  const transactionIdx = users[userIdx].transactions.findIndex(o => o.id === transactionId);
+  if (transactionIdx === -1) {
+    showToast('Transaction not found.', 'error');
+    return;
+  }
+
+  const transaction = users[userIdx].transactions[transactionIdx];
+  transaction.status = 'Received by Customer';
+  transaction.timeline = transaction.timeline || [];
+  transaction.timeline.push({ t: new Date().toISOString(), status: 'Received by Customer' });
+
+  saveUsers(users);
+  showToast(`Transaction ${transactionId} marked as received.`, 'success');
+  renderTransactions();
+}
+
+function checkAndProcessUserAutomatedTasks() {
+  let machinesChanged = false;
+  let usersChanged = false;
+  let userWaitingListChanged = false;
+  const now = Date.now();
+
+  let allUsers = getUsers();
+  let currentUserIndex = allUsers.findIndex(u => u.email === curr.email);
+  if (currentUserIndex === -1) return;
+
+  let currentUser  = allUsers[currentUserIndex];
+  let userTransactions = currentUser .transactions || [];
+  let currentMachines = getMachines();
+  let userWaitingList = getUserWaitingList();
+
+  userTransactions.forEach(transaction => {
+    if (transaction.service === 'Wash & Dry' && transaction.status === 'Pending' && transaction.currentMachineStage === 'wash') {
+      const washDoneTime = new Date(transaction.washCompletionTime).getTime();
+      if (now >= washDoneTime) {
+        transaction.allocatedWasherIds.forEach(washerId => {
+          const washer = currentMachines.find(m => m.id === washerId);
+          if (washer && washer.currentTransaction === transaction.id) {
+            washer.status = 'Available';
+            washer.currentTransaction = undefined;
+            washer.reservedBy = undefined;
+            washer.reservationExpiry = undefined;
+            machinesChanged = true;
+          }
+        });
+
+        const requiredDryers = transaction.qty;
+        const availableDryers = currentMachines.filter(m => m.type === 'dryer' && m.status === 'Available');
+
+        if (availableDryers.length >= requiredDryers) {
+          const allocatedDryers = availableDryers.slice(0, requiredDryers);
+          allocatedDryers.forEach(dryer => {
+            const machineInList = currentMachines.find(m => m.id === dryer.id);
+            if (machineInList) {
+              machineInList.status = 'In Use';
+              machineInList.currentTransaction = transaction.id;
+              machineInList.reservedBy = currentUser .email;
+              machineInList.reservationExpiry = now + (MACHINE_TIMERS['Wash & Dry_DryStage'] * 60 * 1000);
+              machinesChanged = true;
+            }
+          });
+
+          transaction.currentMachineStage = 'dry';
+          transaction.currentMachineIds = allocatedDryers.map(d => d.id);
+          transaction.stageStartTime = new Date().toISOString();
+          transaction.dryCompletionTime = new Date(now + MACHINE_TIMERS['Wash & Dry_DryStage'] * 60 * 1000).toISOString();
+          transaction.stageCompletionTime = transaction.dryCompletionTime;
+          transaction.allocatedDryerIds = allocatedDryers.map(d => d.id);
+          transaction.estimatedCompletion = transaction.dryCompletionTime;
+          transaction.timeline.push({t: new Date().toISOString(), status: `Transitioned to Drying in ${allocatedDryers.map(d => d.name).join(', ')}`});
+          usersChanged = true;
+          showToast(`Your Wash & Dry transaction ${transaction.id} is now drying in ${allocatedDryers.map(d => d.name).join(', ')}.`, 'info');
+        } else {
+          transaction.status = 'Queued';
+          transaction.currentMachineStage = 'waiting_dry';
+          transaction.currentMachineIds = [];
+          transaction.stageStartTime = null;
+          transaction.stageCompletionTime = null;
+          transaction.allocatedDryerIds = [];
+          transaction.estimatedCompletion = null;
+          transaction.queuedFor = 'dryer';
+          transaction.timeline.push({t: new Date().toISOString(), status: 'Wash Complete, Waiting for Dryer'});
+          usersChanged = true;
+          showToast(`Your Wash & Dry transaction ${transaction.id} wash is complete, but no dryer is available. Added to queue.`, 'warning');
+
+          if (!userWaitingList.find(item => item.id === transaction.id)) {
+            userWaitingList.push(transaction);
+            userWaitingListChanged = true;
+          }
+          currentUser .transactions = currentUser .transactions.filter(t => t.id !== transaction.id);
+        }
+      }
+    } else if (transaction.status === 'Pending' && transaction.estimatedCompletion && new Date(transaction.estimatedCompletion).getTime() < now) {
+      transaction.status = (transaction.pickup === 'deliver') ? 'Ready for Delivery' : 'Ready for Pickup';
+      transaction.timeline.push({t: new Date().toISOString(), status: transaction.status});
+      usersChanged = true;
+
+      if (transaction.reservedMachines && transaction.reservedMachines.length > 0) {
+        transaction.reservedMachines.forEach(machineId => {
+          const machine = currentMachines.find(m => m.id === machineId);
+          if (machine && machine.currentTransaction === transaction.id) {
+            machine.status = 'Available';
+            machine.currentTransaction = undefined;
+            machine.reservedBy = undefined;
+                        machine.reservationExpiry = undefined;
+            machinesChanged = true;
+          }
+        });
+      }
+      if (transaction.allocatedWasherIds && transaction.allocatedWasherIds.length > 0) {
+        transaction.allocatedWasherIds.forEach(washerId => {
+          const washer = currentMachines.find(m => m.id === washerId);
+          if (washer && washer.currentTransaction === transaction.id) {
+            washer.status = 'Available';
+            washer.currentTransaction = undefined;
+            washer.reservedBy = undefined;
+            washer.reservationExpiry = undefined;
+            machinesChanged = true;
+          }
+        });
+      }
+      if (transaction.allocatedDryerIds && transaction.allocatedDryerIds.length > 0) {
+        transaction.allocatedDryerIds.forEach(dryerId => {
+          const dryer = currentMachines.find(m => m.id === dryerId);
+          if (dryer && dryer.currentTransaction === transaction.id) {
+            dryer.status = 'Available';
+            dryer.currentTransaction = undefined;
+            dryer.reservedBy = undefined;
+            dryer.reservationExpiry = undefined;
+            machinesChanged = true;
+          }
+        });
+      }
+      showToast(`Your transaction ${transaction.id} is now ${transaction.status}.`, 'success');
+    }
+  });
+
+  // Process user's queued transactions (try to allocate machines)
+  let updatedUserWaitingList = [];
+  userWaitingList.forEach(queuedTransaction => {
+    if (queuedTransaction.status === 'Queued' || queuedTransaction.status === 'Queued - Pending GCash Verification') {
+      // Only attempt allocation if payment is confirmed (or cash)
+      const canAllocate = queuedTransaction.paidWith === 'Cash' || (queuedTransaction.paidWith === 'GCash' && queuedTransaction.status !== 'Queued - Pending GCash Verification');
+
+      if (!canAllocate) {
+        updatedUserWaitingList.push(queuedTransaction); // Keep in waiting list if not paid or GCash not verified
+        return;
+      }
+
+      let allocated = false;
+      if (queuedTransaction.queuedFor === 'washer' && queuedTransaction.service !== 'Wash & Dry') {
+        const requiredWashers = queuedTransaction.qty;
+        const availableWashers = currentMachines.filter(m => m.type === 'washer' && m.status === 'Available');
+        if (availableWashers.length >= requiredWashers) {
+          const allocatedWashers = availableWashers.slice(0, requiredWashers);
+          allocatedWashers.forEach(washer => {
+            const machineInList = currentMachines.find(m => m.id === washer.id);
+            if (machineInList) {
+              machineInList.status = 'In Use';
+              machineInList.currentTransaction = queuedTransaction.id;
+              machineInList.reservedBy = currentUser .email;
+              machineInList.reservationExpiry = now + (MACHINE_TIMERS['Wash'] * 60 * 1000);
+              machinesChanged = true;
+            }
+          });
+          queuedTransaction.status = 'Pending';
+          queuedTransaction.currentMachineStage = 'wash';
+          queuedTransaction.currentMachineIds = allocatedWashers.map(w => w.id);
+          queuedTransaction.stageStartTime = new Date().toISOString();
+          queuedTransaction.washCompletionTime = new Date(now + MACHINE_TIMERS['Wash'] * 60 * 1000).toISOString();
+          queuedTransaction.stageCompletionTime = queuedTransaction.washCompletionTime;
+          queuedTransaction.estimatedCompletion = queuedTransaction.washCompletionTime;
+          queuedTransaction.allocatedWasherIds = allocatedWashers.map(w => w.id);
+          queuedTransaction.timeline = queuedTransaction.timeline || [];
+          queuedTransaction.timeline.push({t: new Date().toISOString(), status: `Washers ${allocatedWashers.map(w => w.name).join(', ')} allocated from queue. Washing started.`});
+          usersChanged = true;
+          currentUser .transactions.push(queuedTransaction); // Move to main transactions list
+          allocated = true;
+          showToast(`Your queued transaction ${queuedTransaction.id} is now washing in ${allocatedWashers.map(w => w.name).join(', ')}.`, 'info');
+        }
+      } else if (queuedTransaction.queuedFor === 'dryer' && queuedTransaction.service !== 'Wash & Dry') {
+        const requiredDryers = queuedTransaction.qty;
+        const availableDryers = currentMachines.filter(m => m.type === 'dryer' && m.status === 'Available');
+        if (availableDryers.length >= requiredDryers) {
+          const allocatedDryers = availableDryers.slice(0, requiredDryers);
+          allocatedDryers.forEach(dryer => {
+            const machineInList = currentMachines.find(m => m.id === dryer.id);
+            if (machineInList) {
+              machineInList.status = 'In Use';
+              machineInList.currentTransaction = queuedTransaction.id;
+              machineInList.reservedBy = currentUser .email;
+              machineInList.reservationExpiry = now + (MACHINE_TIMERS['Dry'] * 60 * 1000);
+              machinesChanged = true;
+            }
+          });
+          queuedTransaction.status = 'Pending';
+          queuedTransaction.currentMachineStage = 'dry';
+          queuedTransaction.currentMachineIds = allocatedDryers.map(d => d.id);
+          queuedTransaction.stageStartTime = new Date().toISOString();
+          queuedTransaction.dryCompletionTime = new Date(now + MACHINE_TIMERS['Dry'] * 60 * 1000).toISOString();
+          queuedTransaction.stageCompletionTime = queuedTransaction.dryCompletionTime;
+          queuedTransaction.estimatedCompletion = queuedTransaction.dryCompletionTime;
+          queuedTransaction.allocatedDryerIds = allocatedDryers.map(d => d.id);
+          queuedTransaction.timeline = queuedTransaction.timeline || [];
+          queuedTransaction.timeline.push({t: new Date().toISOString(), status: `Dryers ${allocatedDryers.map(d => d.name).join(', ')} allocated from queue. Drying started.`});
+          usersChanged = true;
+          currentUser .transactions.push(queuedTransaction); // Move to main transactions list
+          allocated = true;
+          showToast(`Your queued transaction ${queuedTransaction.id} is now drying in ${allocatedDryers.map(d => d.name).join(', ')}.`, 'info');
+        }
+      } else if (queuedTransaction.service === 'Wash & Dry' && queuedTransaction.queuedFor === 'washer') {
+        const requiredWashers = queuedTransaction.qty;
+        const availableWashers = currentMachines.filter(m => m.type === 'washer' && m.status === 'Available');
+        if (availableWashers.length >= requiredWashers) {
+          const allocatedWashers = availableWashers.slice(0, requiredWashers);
+          allocatedWashers.forEach(washer => {
+            const machineInList = currentMachines.find(m => m.id === washer.id);
+            if (machineInList) {
+              machineInList.status = 'In Use';
+              machineInList.currentTransaction = queuedTransaction.id;
+              machineInList.reservedBy = currentUser .email;
+              machineInList.reservationExpiry = now + (MACHINE_TIMERS['Wash & Dry_WashStage'] * 60 * 1000);
+              machinesChanged = true;
+            }
+          });
+          queuedTransaction.status = 'Pending';
+          queuedTransaction.currentMachineStage = 'wash';
+          queuedTransaction.currentMachineIds = allocatedWashers.map(w => w.id);
+          queuedTransaction.stageStartTime = new Date().toISOString();
+          queuedTransaction.washCompletionTime = new Date(now + MACHINE_TIMERS['Wash & Dry_WashStage'] * 60 * 1000).toISOString();
+          queuedTransaction.stageCompletionTime = queuedTransaction.washCompletionTime;
+          queuedTransaction.estimatedCompletion = new Date(now + (MACHINE_TIMERS['Wash & Dry_WashStage'] + MACHINE_TIMERS['Wash & Dry_DryStage']) * 60 * 1000).toISOString();
+          queuedTransaction.allocatedWasherIds = allocatedWashers.map(w => w.id);
+          queuedTransaction.timeline = queuedTransaction.timeline || [];
+          queuedTransaction.timeline.push({t: new Date().toISOString(), status: `Washers ${allocatedWashers.map(w => w.name).join(', ')} allocated from queue. Washing started.`});
+          usersChanged = true;
+          currentUser .transactions.push(queuedTransaction); // Move to main transactions list
+          allocated = true;
+          showToast(`Your queued Wash & Dry transaction ${queuedTransaction.id} is now washing in ${allocatedWashers.map(w => w.name).join(', ')}.`, 'info');
+        }
+      } else if (queuedTransaction.service === 'Wash & Dry' && queuedTransaction.queuedFor === 'dryer' && queuedTransaction.currentMachineStage === 'waiting_dry') {
+        const requiredDryers = queuedTransaction.qty;
+        const availableDryers = currentMachines.filter(m => m.type === 'dryer' && m.status === 'Available');
+        if (availableDryers.length >= requiredDryers) {
+          const allocatedDryers = availableDryers.slice(0, requiredDryers);
+          allocatedDryers.forEach(dryer => {
+            const machineInList = currentMachines.find(m => m.id === dryer.id);
+            if (machineInList) {
+              machineInList.status = 'In Use';
+              machineInList.currentTransaction = queuedTransaction.id;
+              machineInList.reservedBy = currentUser .email;
+              machineInList.reservationExpiry = now + (MACHINE_TIMERS['Wash & Dry_DryStage'] * 60 * 1000);
+              machinesChanged = true;
+            }
+          });
+          queuedTransaction.status = 'Pending';
+          queuedTransaction.currentMachineStage = 'dry';
+          queuedTransaction.currentMachineIds = allocatedDryers.map(d => d.id);
+          queuedTransaction.stageStartTime = new Date().toISOString();
+          queuedTransaction.dryCompletionTime = new Date(now + MACHINE_TIMERS['Wash & Dry_DryStage'] * 60 * 1000).toISOString();
+          queuedTransaction.stageCompletionTime = queuedTransaction.dryCompletionTime;
+          queuedTransaction.estimatedCompletion = queuedTransaction.dryCompletionTime;
+          queuedTransaction.allocatedDryerIds = allocatedDryers.map(d => d.id);
+          queuedTransaction.timeline = queuedTransaction.timeline || [];
+          queuedTransaction.timeline.push({t: new Date().toISOString(), status: `Dryers ${allocatedDryers.map(d => d.name).join(', ')} allocated from queue. Drying started.`});
+          usersChanged = true;
+          currentUser .transactions.push(queuedTransaction); // Move to main transactions list
+          allocated = true;
+          showToast(`Your queued Wash & Dry transaction ${queuedTransaction.id} is now drying in ${allocatedDryers.map(d => d.name).join(', ')}.`, 'info');
+        }
+      }
+
+      if (!allocated) {
+        updatedUserWaitingList.push(queuedTransaction); // Keep in waiting list if not allocated
+      } else {
+        userWaitingListChanged = true;
+      }
+    } else {
+      updatedUserWaitingList.push(queuedTransaction); // Keep non-queued items
+    }
+  });
+
+  // Update current user's transactions with processed ones
+  if (usersChanged) {
+    allUsers[currentUserIndex] = currentUser ;
+    saveUsers(allUsers);
+  }
+  if (userWaitingListChanged) {
+    saveUserWaitingList(updatedUserWaitingList); // Save updated user waiting list
+  }
+  if (machinesChanged) {
+    saveMachines(currentMachines);
+  }
+
+  // Re-render if changes occurred
+  if (machinesChanged || usersChanged || userWaitingListChanged) {
+    renderTransactions();
+  }
+}
+
+// Run automated tasks every 5 seconds (for real-time updates)
+setInterval(checkAndProcessUserAutomatedTasks, 5000);
+checkAndProcessUserAutomatedTasks(); // Run once on page load
+
+// Initial render
+renderTransactions();
+</script>
+</body>
+</html>

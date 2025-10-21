@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Thia & Nicole Laundry - Payment</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="toast.css">
+<style>
+  :root{--bg:#f4f7fb;--card:#fff;--primary:#1766ff;--muted:#6b7280;}
+  body{
+    margin: 0;
+    font-family: Inter, system-ui, Arial;
+    background: url('https://images.unsplash.com/photo-1696546761269-a8f9d2b80512?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE4fHx8ZW58MHx8fHx8&ixlib=rb-4.1.0&q=60&w=3000') no-repeat center center/cover fixed;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(188, 200, 224, 0.4), rgba(0,0,0,0.3));
+    z-index: 0;
+  }
+  .floating-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(174, 200, 226, 0.416); /* soft blue */
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 25px rgba(31, 31, 31, 0.2);
+    pointer-events: none;
+    animation: floatBubble linear infinite alternate;
+    z-index: 1;
+  } 
+    /* 15 bubbles, scattered & elegant */
+    .bubble1  { width:120px; height:120px; top:10%; left:8%;   animation: floatBubble 8s ease-in-out infinite; }
+    .bubble2  { width:200px; height:200px; bottom:25%; left:12%; animation: floatBubble 5s ease-in-out infinite 2s;}
+    .bubble3  { width:90px;  height:90px;  top:5%;  left:75%;  animation: floatBubble 6s ease-in-out infinite 2s; }
+    .bubble4  { width:150px; height:150px; bottom:20%; right:20%; animation: floatBubble 10s ease-in-out infinite 4s; }
+    .bubble5  { width:180px; height:180px; bottom:2%; left:8%; animation: floatBubble 7s ease-in-out infinite 4s; }
+    .bubble6  { width:100px; height:100px; top:50%; right:5%;   animation: floatBubble 9s ease-in-out infinite 3s; }
+    .bubble7  { width:130px; height:130px; bottom:8%; right:8%; animation: floatBubble 3s ease-in-out infinite 3s; }
+    .bubble8  { width:160px; height:160px; top:38%; left:55%; animation: floatBubble 3s ease-in-out infinite 3s; }
+    .bubble9  { width:110px; height:110px; top:18%; left:20%; animation: floatBubble 5s ease-in-out infinite 3s; }
+    .bubble10 { width:140px; height:140px; bottom:15%; left:65%; animation: floatBubble 2s ease-in-out infinite 2s; }
+    .bubble11 { width:170px; height:170px; bottom:0%; right:60%; animation: floatBubble 3s ease-in-out infinite 1s; }
+    .bubble12 { width:100px; height:100px; bottom:0%; left:25%; animation: floatBubble 8s ease-in-out infinite 4s; }
+    .bubble13 { width:190px; height:190px; top:4%; right:5%; animation: floatBubble 6s ease-in-out infinite 2s; }
+    .bubble14 { width:80px;  height:80px;  top:60%; left:30%; animation: floatBubble 5s ease-in-out infinite 5s; }
+    .bubble15 { width:150px; height:150px; bottom:90%; right:45%; animation: floatBubble 3s ease-in-out infinite 2s; }
+    @keyframes floatBubble {
+        0%   { transform: translateY(0) translateX(0); opacity: 0.7; }
+        50%  { transform: translateY(-40px) translateX(20px); opacity: 1; }
+        100% { transform: translateY(0) translateX(0); opacity: 0.7; }
+  }
+  .app{max-width:480px;margin:20px auto;padding:15px;position: relative; z-index: 10;} /* Adjusted padding */
+  .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06);margin-bottom:12px} /* Adjusted padding and margin */
+  h2{margin-top:0;margin-bottom:15px;color:#111} /* Adjusted margin */
+  label{display: block; margin-bottom: 4px; font-size: 14px; color: #333;} /* Consistent label styling */
+  .btn{padding:9px 14px;border-radius:10px;background:var(--primary);color:#fff;border:none;cursor:pointer;font-size:14px;} /* Adjusted padding and font size */
+  .btn.alt{background:#eef2ff;color:var(--primary)}
+  .small{font-size:12px;color:var(--muted)} /* Smaller font */
+  .payment-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* Adjusted gap */
+    margin-top: 10px;
+  }
+  .payment-options .btn {
+    flex: 1 1 auto; /* Allow buttons to grow and shrink */
+    min-width: 100px; /* Minimum width for buttons */
+  }
+  .payment-form {
+    margin-top: 15px;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #f9f9f9;
+  }
+  .payment-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 13px; /* Smaller font */
+  }
+  .payment-form input[type="text"],
+  .payment-form input[type="file"] { /* Added file input styling */
+    width: calc(100% - 20px);
+    padding: 9px; /* Adjusted padding */
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+  }
+  .payment-form .row {
+    display: flex;
+    gap: 10px;
+  }
+  .payment-form .row .col {
+    flex: 1;
+  }
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    flex-direction: column;
+  }
+  .loading-overlay .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .loading-overlay p {
+    margin-top: 15px;
+    font-size: 16px;
+    color: var(--primary);
+  }
+  #total {
+    font-size: 18px; /* Slightly smaller font */
+    margin-bottom: 12px; /* Adjusted margin */
+  }
+   .hidden {
+    display: none !important;
+  }
+  .gcash-qr-container {
+    text-align: center;
+    margin-top: 14px;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #f9f9f9;
+  }
+  .gcash-qr-container img {
+    width: 120px;
+    height: 120px;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+  .gcash-qr-container .small {
+    margin-top: 6px;
+  }
+  .gcash-qr-container input[type="file"] {
+    margin-top: 10px;
+    width: auto; /* Adjust width for file input */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .gcash-qr-container .btn {
+    margin-top: 10px;
+  }
+
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="card">
+    <h2><i class="fas fa-money-bill-wave"></i> Payment</h2>
+    <div class="small">Total Amount</div>
+    <div id="total" style="font-weight:700;">₱0</div>
+
+    <label style="margin-top: 15px;">Choose method:</label>
+    <div class="payment-options">
+      <button class="btn" onclick="processPayment('Cash')"><i class="fas fa-money-bill-alt"></i> Cash</button>
+      <button class="btn alt" onclick="showGcashForm()"><i class="fas fa-wallet"></i> GCash</button>
+    </div>
+
+    <div id="gcash-box" class="gcash-qr-container" style="display:none;">
+      <img src="./di.jpg" alt="GCash QR">
+      <div class="small">Scan GCash QR to pay</div>
+      <div class="small">Account Number: 09932184932</div>
+      <label for="gcash-proof" style="margin-top: 10px;">Upload GCash Payment Screenshot:</label>
+      <input type="file" id="gcash-proof" accept="image/*">
+      <button class="btn" onclick="processPayment('GCash')">Confirm GCash Payment</button>
+    </div>
+
+    <div style="margin-top:16px">
+      <button class="btn alt" onclick="location.href='service-choice.html'"><i class="fas fa-arrow-left"></i> Back</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="loading-overlay" class="loading-overlay hidden">
+  <div class="spinner"></div>
+  <p>Verifying payment...</p>
+</div>
+    <div class="floating-bubble bubble1"></div>
+    <div class="floating-bubble bubble2"></div>
+    <div class="floating-bubble bubble3"></div>
+    <div class="floating-bubble bubble4"></div>
+    <div class="floating-bubble bubble5"></div>
+    <div class="floating-bubble bubble6"></div>
+    <div class="floating-bubble bubble7"></div>
+    <div class="floating-bubble bubble8"></div>
+    <div class="floating-bubble bubble9"></div>
+    <div class="floating-bubble bubble10"></div>
+    <div class="floating-bubble bubble11"></div>
+    <div class="floating-bubble bubble12"></div>
+    <div class="floating-bubble bubble13"></div>
+    <div class="floating-bubble bubble14"></div>
+    <div class="floating-bubble bubble15"></div>
+
+<script src="toast.js"></script>
+<script>
+/* ---------- HELPERS ---------- */
+const LS_CURR = 'tn_current_v1';
+const LS_USERS = 'tn_accounts_v2';
+const LS_MACH = 'tn_machines_v1';
+
+// Helper to safely get JSON from localStorage
+function getLocalStorageItem(key, defaultValue = '[]') {
+    try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : JSON.parse(defaultValue);
+    } catch (e) {
+        console.error(`Error parsing localStorage item "${key}":`, e);
+        showToast(`Error loading data for ${key}. Please clear browser cache.`, 'error');
+        return JSON.parse(defaultValue); // Return default to prevent further errors
+    }
+}
+
+function getUsers(){return getLocalStorageItem(LS_USERS, '[]');}
+function saveUsers(u){localStorage.setItem(LS_USERS,JSON.stringify(u));}
+function getMachines(){return getLocalStorageItem(LS_MACH, '[]');}
+function saveMachines(arr){localStorage.setItem(LS_MACH,JSON.stringify(arr));}
+function getCurrent(){return getLocalStorageItem(LS_CURR, 'null');}
+
+
+const curr = getCurrent();
+if(!curr || curr.email === undefined){ // Check for a valid current user object
+  showToast('Please login first', 'error');
+  location.href='auth.html';
+}
+
+const draft = getLocalStorageItem('transaction_draft', 'null');
+if(!draft || draft.service === undefined){ // Check for a valid draft object
+  showToast('No transaction draft found', 'error');
+  location.href='services.html';
+}
+
+document.getElementById('total').textContent = '₱'+draft.total;
+
+function hideAllPaymentForms() {
+  document.getElementById('gcash-box').style.display = 'none';
+  // Removed Credit Card and PayMaya forms
+}
+
+function showGcashForm(){
+  hideAllPaymentForms();
+  document.getElementById('gcash-box').style.display='block';
+}
+
+/* ---------- FINALIZE TRANSACTION ---------- */
+function processPayment(method){
+  document.getElementById('loading-overlay').classList.remove('hidden');
+
+  if (method === 'GCash') {
+    const gcashProofInput = document.getElementById('gcash-proof');
+    if (!gcashProofInput.files || gcashProofInput.files.length === 0) {
+      showToast('Please upload your GCash payment screenshot.', 'error');
+      document.getElementById('loading-overlay').classList.add('hidden');
+      return;
+    }
+
+    const file = gcashProofInput.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      draft.gcashProof = e.target.result; // Store Base64 string of the screenshot
+      finalize(method);
+    };
+    reader.onerror = (error) => {
+      console.error("Error reading file:", error);
+      showToast('Failed to read GCash screenshot. Please try again.', 'error');
+      document.getElementById('loading-overlay').classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+  } else {
+    finalize(method);
+  }
+}
+
+function finalize(method){
+  draft.id = 'O'+Math.floor(Math.random()*9000+1000);
+  draft.paidWith = method;
+  
+  if (method === 'Cash') {
+    draft.status = 'Pending'; // Cash is assumed paid immediately
+    draft.timeline = [{t:new Date().toISOString(),status:'Paid (Cash)'}, {t:new Date().toISOString(),status:'Pending'}];
+  } else if (method === 'GCash') {
+    draft.status = 'Pending GCash Verification'; // New status for admin to verify
+    draft.timeline = [{t:new Date().toISOString(),status:'Payment Pending (GCash Verification)'}];
+  }
+
+  const users = getUsers();
+  const idx = users.findIndex(u=>u.email===curr.email);
+  if(idx===-1){
+    showToast('User not found. Please log in again.', 'error');
+    document.getElementById('loading-overlay').classList.add('hidden'); // Hide overlay
+    location.href='auth.html'; // Redirect to login
+    return;
+  }
+  users[idx].transactions = users[idx].transactions || [];
+  users[idx].transactions.push(draft);
+
+  saveUsers(users);
+
+  // Update machine status if one was reserved
+  if (draft.reservedMachines && draft.reservedMachines.length > 0) {
+    const machines = getMachines();
+    draft.reservedMachines.forEach(reservedId => {
+      const machine = machines.find(m => m.id === reservedId);
+      if (machine) {
+        machine.status = 'In Use'; // Change from Reserved to In Use
+        machine.currentTransaction = draft.id; // Link transaction to machine
+        machine.reservedBy = undefined; // Clear reservation
+        machine.reservationExpiry = undefined;
+      }
+    });
+    saveMachines(machines);
+  }
+
+  localStorage.removeItem('transaction_draft');
+  
+  if (method === 'Cash') {
+    showToast('Payment successful! Transaction placed.', 'success');
+  } else if (method === 'GCash') {
+    showToast('GCash payment submitted for verification. Check your transactions for updates.', 'info');
+  }
+  
+  // Redirect to home page
+  localStorage.setItem('last_receipt', JSON.stringify(draft));
+  location.href='home.html';
+}
+</script>
+</body>
+</html>

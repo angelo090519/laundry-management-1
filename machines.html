@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Thia & Nicole Laundry - Machines</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="toast.css">
+<style>
+  :root{--bg:#f4f7fb;--card:#fff;--primary:#1766ff;--muted:#6b7280;}
+    body{
+    margin: 0;
+    font-family: Inter, system-ui, Arial;
+    background: url('https://images.unsplash.com/photo-1696546761269-a8f9d2b80512?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE4fHx8ZW58MHx8fHx8&ixlib=rb-4.1.0&q=60&w=3000') no-repeat center center/cover fixed;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(188, 200, 224, 0.4), rgba(0,0,0,0.3));
+    z-index: 0;
+  }
+  .floating-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(174, 200, 226, 0.416); /* soft blue */
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 25px rgba(31, 31, 31, 0.2);
+    pointer-events: none;
+    animation: floatBubble linear infinite alternate;
+    z-index: 1;
+  } 
+    /* 15 bubbles, scattered & elegant */
+    .bubble1  { width:120px; height:120px; top:10%; left:8%;   animation: floatBubble 8s ease-in-out infinite; }
+    .bubble2  { width:200px; height:200px; bottom:25%; left:12%; animation: floatBubble 5s ease-in-out infinite 2s;}
+    .bubble3  { width:90px;  height:90px;  top:5%;  left:75%;  animation: floatBubble 6s ease-in-out infinite 2s; }
+    .bubble4  { width:150px; height:150px; bottom:20%; right:20%; animation: floatBubble 10s ease-in-out infinite 4s; }
+    .bubble5  { width:180px; height:180px; bottom:2%; left:8%; animation: floatBubble 7s ease-in-out infinite 4s; }
+    .bubble6  { width:100px; height:100px; top:50%; right:5%;   animation: floatBubble 9s ease-in-out infinite 3s; }
+    .bubble7  { width:130px; height:130px; bottom:8%; right:8%; animation: floatBubble 3s ease-in-out infinite 3s; }
+    .bubble8  { width:160px; height:160px; top:38%; left:55%; animation: floatBubble 3s ease-in-out infinite 3s; }
+    .bubble9  { width:110px; height:110px; top:18%; left:20%; animation: floatBubble 5s ease-in-out infinite 3s; }
+    .bubble10 { width:140px; height:140px; bottom:15%; left:65%; animation: floatBubble 2s ease-in-out infinite 2s; }
+    .bubble11 { width:170px; height:170px; bottom:0%; right:60%; animation: floatBubble 3s ease-in-out infinite 1s; }
+    .bubble12 { width:100px; height:100px; bottom:0%; left:25%; animation: floatBubble 8s ease-in-out infinite 4s; }
+    .bubble13 { width:190px; height:190px; top:4%; right:5%; animation: floatBubble 6s ease-in-out infinite 2s; }
+    .bubble14 { width:80px;  height:80px;  top:60%; left:30%; animation: floatBubble 5s ease-in-out infinite 5s; }
+    .bubble15 { width:150px; height:150px; bottom:90%; right:45%; animation: floatBubble 3s ease-in-out infinite 2s; }
+    @keyframes floatBubble {
+        0%   { transform: translateY(0) translateX(0); opacity: 0.7; }
+        50%  { transform: translateY(-40px) translateX(20px); opacity: 1; }
+        100% { transform: translateY(0) translateX(0); opacity: 0.7; }
+  }
+  .app{max-width:700px;margin:20px auto;padding:18px; position: relative;z-index: 10;}
+  .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06);margin-bottom:14px}
+  .btn{padding:8px 12px;border-radius:8px;background:var(--primary);color:#fff;border:none;cursor:pointer;font-size:13px}
+  .btn.alt{background:#eef2ff;color:var(--primary)}
+  .machine-item{border:1px solid #eee;border-radius:12px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+  .small{font-size:13px;color:var(--muted)}
+  .status-available { color: green; font-weight: bold; }
+  .status-in-use { color: orange; font-weight: bold; }
+  .status-reserved { color: blue; font-weight: bold; }
+  .status-maintenance { color: red; font-weight: bold; }
+</style>
+</head>
+<body>
+  <div class="floating-bubble bubble1"></div>
+    <div class="floating-bubble bubble2"></div>
+    <div class="floating-bubble bubble3"></div>
+    <div class="floating-bubble bubble4"></div>
+    <div class="floating-bubble bubble5"></div>
+    <div class="floating-bubble bubble6"></div>
+    <div class="floating-bubble bubble7"></div>
+    <div class="floating-bubble bubble8"></div>
+    <div class="floating-bubble bubble9"></div>
+    <div class="floating-bubble bubble10"></div>
+    <div class="floating-bubble bubble11"></div>
+    <div class="floating-bubble bubble12"></div>
+    <div class="floating-bubble bubble13"></div>
+    <div class="floating-bubble bubble14"></div>
+    <div class="floating-bubble bubble15"></div>
+<div class="app">
+
+  <div class="card">
+    <h2><i class="fas fa-washing-machine"></i> Washing Machines & Dryers</h2>
+    <div id="machine-list" style="margin-top:14px"></div>
+
+    <div style="margin-top:14px">
+      <button class="btn alt" onclick="location.href='home.html'"><i class="fas fa-arrow-left"></i> Back to Home</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="toast.js"></script>
+<script>
+/* ---------- HELPERS ---------- */
+const LS_CURR = 'tn_current_v1';
+const LS_MACH = 'tn_machines_v1';
+const LS_USERS = 'tn_accounts_v2'; // Added to handle transaction cancellation
+const LS_USER_WAITING_LIST = 'tn_user_waiting_v1'; // Added to handle transaction cancellation
+
+// Helper to safely get JSON from localStorage
+function getLocalStorageItem(key, defaultValue = '[]') {
+    try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : JSON.parse(defaultValue);
+    } catch (e) {
+        console.error(`Error parsing localStorage item "${key}":`, e);
+        showToast(`Error loading data for ${key}. Please clear browser cache.`, 'error');
+        return JSON.parse(defaultValue); // Return default to prevent further errors
+    }
+}
+
+function getMachines(){return getLocalStorageItem(LS_MACH, '[]');}
+function saveMachines(arr){localStorage.setItem(LS_MACH,JSON.stringify(arr));}
+function getCurrent(){return getLocalStorageItem(LS_CURR, 'null');}
+function getUsers(){return getLocalStorageItem(LS_USERS, '[]');}
+function saveUsers(u){localStorage.setItem(LS_USERS,JSON.stringify(u));}
+function getUserWaitingList(){return getLocalStorageItem(LS_USER_WAITING_LIST,'[]');}
+function saveUserWaitingList(arr){localStorage.setItem(LS_USER_WAITING_LIST,JSON.stringify(arr));}
+
+
+const curr = getCurrent();
+if(!curr || curr.email === undefined){
+  showToast('Please login first', 'error');
+  location.href='auth.html';
+}
+
+/* ---------- INIT DUMMY MACHINES IF NONE ---------- */
+let machines = getMachines();
+if(machines.length===0 || !machines[0].type){ // Check if machines are empty or old format
+  machines = [];
+  for(let i=1; i<=10; i++){
+    machines.push({id:`W${i}`, name:`Washer ${i}`, type:'washer', status:'Available'});
+  }
+  for(let i=1; i<=10; i++){
+    machines.push({id:`D${i}`, name:`Dryer ${i}`, type:'dryer', status:'Available'});
+  }
+  saveMachines(machines);
+}
+
+/* ---------- DISPLAY MACHINES ---------- */
+const list = document.getElementById('machine-list');
+function render(){
+  list.innerHTML='';
+  machines = getMachines(); // Re-fetch to get latest status
+  if (machines.length === 0) {
+    list.innerHTML = '<div class="small">No machines configured. Please contact admin.</div>';
+    return;
+  }
+
+  machines.forEach((m,i)=>{
+    const div = document.createElement('div');
+    div.className='machine-item';
+    let statusClass = '';
+    switch(m.status) {
+      case 'Available': statusClass = 'status-available'; break;
+      case 'In Use': statusClass = 'status-in-use'; break;
+      case 'Reserved': statusClass = 'status-reserved'; break;
+      case 'Maintenance': statusClass = 'status-maintenance'; break;
+      default: statusClass = '';
+    }
+
+    div.innerHTML = `
+      <div>
+        <strong>${m.name}</strong> (${m.type.charAt(0).toUpperCase() + m.type.slice(1)})
+        <div class="small">ID: ${m.id}</div>
+        <div class="small">Status: <span class="${statusClass}">${m.status}</span></div>
+        ${m.currentTransaction ? `<div class="small">Transaction: ${m.currentTransaction}</div>` : ''}
+        ${m.reservedBy ? `<div class="small">Reserved by: ${m.reservedBy}</div>` : ''}
+        ${m.reservationExpiry && m.status === 'Reserved' ? `<div class="small">Expires: ${new Date(m.reservationExpiry).toLocaleTimeString()}</div>` : ''}
+      </div>
+      ${curr.role==='admin' ? `
+        <button class="btn" onclick="toggleStatus(${i})"><i class="fas fa-sync-alt"></i> Toggle Status</button>
+      `:''}
+    `;
+    list.appendChild(div);
+  });
+}
+render();
+
+/* ---------- TOGGLE STATUS (ADMIN) ---------- */
+function toggleStatus(i){
+  const machines = getMachines(); // Get latest state
+  const currentMachine = machines[i];
+  const currentStatus = currentMachine.status;
+  let newStatus;
+
+  // Handle cancellation if machine is In Use
+  if (currentStatus === 'In Use') {
+    if (!confirm(`Machine ${currentMachine.name} is currently IN USE by transaction ${currentMachine.currentTransaction}. Changing its status will CANCEL this transaction and free up ALL associated machines. Are you sure?`)) {
+      return; // Admin cancelled the action
+    }
+
+    // Find and cancel the associated transaction
+    const transactionIdToCancel = currentMachine.currentTransaction;
+    let users = getUsers();
+    let transactionFound = false;
+
+    for (let uIdx = 0; uIdx < users.length; uIdx++) {
+      const userTransactions = users[uIdx].transactions || [];
+      const transactionIdx = userTransactions.findIndex(t => t.id === transactionIdToCancel);
+
+      if (transactionIdx !== -1) {
+        const transaction = userTransactions[transactionIdx];
+        transaction.status = 'Cancelled';
+        transaction.timeline = transaction.timeline || [];
+        transaction.timeline.push({ t: new Date().toISOString(), status: 'Cancelled (Admin Force-Released Machine)' });
+        
+        // Release all machines associated with this transaction
+        let machinesChanged = false;
+        const allMachineIdsToRelease = new Set();
+        if (transaction.reservedMachines) transaction.reservedMachines.forEach(id => allMachineIdsToRelease.add(id));
+        if (transaction.allocatedWasherIds) transaction.allocatedWasherIds.forEach(id => allMachineIdsToRelease.add(id));
+        if (transaction.allocatedDryerIds) transaction.allocatedDryerIds.forEach(id => allMachineIdsToRelease.add(id));
+        if (transaction.currentMachineIds) transaction.currentMachineIds.forEach(id => allMachineIdsToRelease.add(id));
+        if (transaction.currentMachineId && !transaction.currentMachineIds.includes(transaction.currentMachineId)) allMachineIdsToRelease.add(transaction.currentMachineId); // Fallback for single machine
+
+        allMachineIdsToRelease.forEach(id => {
+          const m = machines.find(machine => machine.id === id);
+          if (m && m.currentTransaction === transactionIdToCancel) { // Only release if linked to this transaction
+            m.status = 'Available';
+            m.currentTransaction = undefined;
+            m.reservedBy = undefined;
+            m.reservationExpiry = undefined;
+            machinesChanged = true;
+          }
+        });
+
+        // Remove from user-specific waiting list if present
+        let userWaitingList = getUserWaitingList();
+        const initialUserWaitingListLength = userWaitingList.length;
+        userWaitingList = userWaitingList.filter(item => item.id !== transactionIdToCancel);
+        if (userWaitingList.length !== initialUserWaitingListLength) {
+          saveUserWaitingList(userWaitingList);
+        }
+
+        saveUsers(users); // Save updated users (with cancelled transaction)
+        if (machinesChanged) saveMachines(machines); // Save updated machines (released)
+
+        showToast(`Transaction ${transactionIdToCancel} has been cancelled due to machine ${currentMachine.name} status change.`, 'warning');
+        
+        // Log the cancellation
+        // (Assuming getLogs and saveLogs are available from admin.html context or a shared helper)
+        // const logs = getLogs();
+        // logs.push({t:Date.now(), type:'transaction_cancel', msg:`Transaction ${transactionIdToCancel} cancelled by admin due to machine ${currentMachine.id} status change.`});
+        // saveLogs(logs);
+
+        transactionFound = true;
+        break; // Exit loop once transaction is found and cancelled
+      }
+    }
+    if (!transactionFound) {
+      showToast(`Could not find transaction ${transactionIdToCancel} to cancel.`, 'error');
+    }
+  }
+
+  switch(currentStatus) {
+    case 'Available': newStatus = 'In Use'; break;
+    case 'In Use': newStatus = 'Maintenance'; break;
+    case 'Maintenance': newStatus = 'Available'; break;
+    case 'Reserved':
+      if (confirm(`Machine ${currentMachine.name} is reserved. Force change status to Available? This will cancel the reservation.`)) {
+        newStatus = 'Available';
+        currentMachine.reservedBy = undefined;
+        currentMachine.reservationExpiry = undefined;
+        currentMachine.currentTransaction = undefined;
+      } else {
+        return; // Don't change status
+      }
+      break;
+    default: newStatus = 'Available';
+  }
+
+  currentMachine.status = newStatus;
+  saveMachines(machines);
+  showToast(`Machine ${currentMachine.name} status changed to ${newStatus}`, 'info');
+  render();
+  // If this page is used by admin, also trigger re-renders for other admin tabs
+  // if (typeof renderTransactions === 'function') renderTransactions();
+  // if (typeof renderWaitingQueue === 'function') renderWaitingQueue();
+  // if (typeof renderDashboard === 'function') renderDashboard();
+  // if (typeof renderLogs === 'function') renderLogs();
+}
+
+// Optional: Auto-release reserved machines if reservation expires (can be run on admin/machines page load)
+function checkAndReleaseExpiredReservations() {
+  let machines = getMachines();
+  let changed = false;
+  const now = Date.now();
+
+  machines.forEach(m => {
+    if (m.status === 'Reserved' && m.reservationExpiry && now > m.reservationExpiry) {
+      m.status = 'Available';
+      m.reservedBy = undefined;
+      m.reservationExpiry = undefined;
+      m.currentTransaction = undefined;
+      changed = true;
+      console.log(`Reservation for ${m.name} expired and released.`);
+    }
+  });
+
+  if (changed) {
+    saveMachines(machines);
+    render();
+  }
+}
+
+// Run this check when the page loads
+checkAndReleaseExpiredReservations();
+
+// You could also set an interval to check every minute or so if this page is often open
+// setInterval(checkAndReleaseExpiredReservations, 60 * 1000); // Check every minute
+</script>
+</body>
+</html>

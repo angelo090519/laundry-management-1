@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Thia & Nicole Laundry - Revenue</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="toast.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<style>
+  :root{--bg:#f4f7fb;--card:#fff;--primary:#1766ff;--muted:#6b7280;}
+  body{
+    margin: 0;
+    font-family: Inter, system-ui, Arial;
+    background: url('https://images.unsplash.com/photo-1696546761269-a8f9d2b80512?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE4fHx8ZW58MHx8fHx8&ixlib=rb-4.1.0&q=60&w=3000') no-repeat center center/cover fixed;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(188, 200, 224, 0.4), rgba(0,0,0,0.3));
+    z-index: 0;
+  }
+  .floating-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(174, 200, 226, 0.416);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 25px rgba(31, 31, 31, 0.2);
+    pointer-events: none;
+    animation: floatBubble linear infinite alternate;
+    z-index: 1;
+  }
+  .bubble1  { width:120px; height:120px; top:10%; left:8%; animation: floatBubble 8s ease-in-out infinite; }
+  .bubble2  { width:200px; height:200px; bottom:25%; left:12%; animation: floatBubble 5s ease-in-out infinite 2s;}
+  .bubble3  { width:90px; height:90px; top:5%; left:75%; animation: floatBubble 6s ease-in-out infinite 2s; }
+  .bubble4  { width:150px; height:150px; bottom:20%; right:20%; animation: floatBubble 10s ease-in-out infinite 4s; }
+  .bubble5  { width:180px; height:180px; bottom:2%; left:8%; animation: floatBubble 7s ease-in-out infinite 4s; }
+  .bubble6  { width:100px; height:100px; top:50%; right:5%; animation: floatBubble 9s ease-in-out infinite 3s; }
+  .bubble7  { width:130px; height:130px; bottom:8%; right:8%; animation: floatBubble 3s ease-in-out infinite 3s; }
+  .bubble8  { width:160px; height:160px; top:38%; left:55%; animation: floatBubble 3s ease-in-out infinite 3s; }
+  .bubble9  { width:110px; height:110px; top:18%; left:20%; animation: floatBubble 5s ease-in-out infinite 3s; }
+  .bubble10 { width:140px; height:140px; bottom:15%; left:65%; animation: floatBubble 2s ease-in-out infinite 2s; }
+  .bubble11 { width:170px; height:170px; bottom:0%; right:60%; animation: floatBubble 3s ease-in-out infinite 1s; }
+  .bubble12 { width:100px; height:100px; bottom:0%; left:25%; animation: floatBubble 8s ease-in-out infinite 4s; }
+  .bubble13 { width:190px; height:190px; top:4%; right:5%; animation: floatBubble 6s ease-in-out infinite 2s; }
+  .bubble14 { width:80px; height:80px; top:60%; left:30%; animation: floatBubble 5s ease-in-out infinite 5s; }
+  .bubble15 { width:150px; height:150px; bottom:90%; right:45%; animation: floatBubble 3s ease-in-out infinite 2s; }
+  @keyframes floatBubble {
+    0% { transform: translateY(0) translateX(0); opacity: 0.7; }
+    50% { transform: translateY(-40px) translateX(20px); opacity: 1; }
+    100% { transform: translateY(0) translateX(0); opacity: 0.7; }
+  }
+  .app{max-width:1100px;margin:20px auto;padding:18px;position:relative;z-index:10;}
+  .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06);margin-bottom:20px}
+  .btn{padding:8px 12px;border-radius:8px;background:var(--primary);color:#fff;border:none;cursor:pointer;font-size:13px}
+  .btn.alt{background:#eef2ff;color:var(--primary)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:20px}
+  .stat-card{background:#f0f3f8;padding:15px;border-radius:8px;text-align:center}
+  .chart-container{width:100%;max-width:800px;margin:20px auto;}
+</style>
+</head>
+<body>
+  <div class="floating-bubble bubble1"></div>
+  <div class="floating-bubble bubble2"></div>
+  <div class="floating-bubble bubble3"></div>
+  <div class="floating-bubble bubble4"></div>
+  <div class="floating-bubble bubble5"></div>
+  <div class="floating-bubble bubble6"></div>
+  <div class="floating-bubble bubble7"></div>
+  <div class="floating-bubble bubble8"></div>
+  <div class="floating-bubble bubble9"></div>
+  <div class="floating-bubble bubble10"></div>
+  <div class="floating-bubble bubble11"></div>
+  <div class="floating-bubble bubble12"></div>
+  <div class="floating-bubble bubble13"></div>
+  <div class="floating-bubble bubble14"></div>
+  <div class="floating-bubble bubble15"></div>
+
+<div class="app">
+  <div class="card">
+    <h2 data-aos="fade-down"><i class="fas fa-chart-line"></i> Reports Dashboard</h2>
+    <div class="stats" data-aos="fade-up">
+      <div class="stat-card"><h3 id="total-sales">0</h3><p>Total Sales</p></div>
+      <div class="stat-card"><h3 id="total-customers">0</h3><p>Total Customers</p></div>
+      <div class="stat-card"><h3 id="total-transactions">0</h3><p>Total Transactions</p></div>
+      <div class="stat-card"><h3 id="total-revenue">₱0</h3><p>Total Revenue</p></div>
+    </div>
+    <div class="chart-container" data-aos="zoom-in">
+      <h3>Revenue by Date</h3>
+      <canvas id="revenueChart"></canvas>
+    </div>
+    <div style="margin-top:14px">
+      <button class="btn alt" onclick="location.href='admin.html'"><i class="fas fa-arrow-left"></i> Back to Admin</button>
+    </div>
+  </div>
+</div>
+
+<script src="toast.js"></script>
+<script src="api.js"></script>
+<script>
+const curr = JSON.parse(localStorage.getItem('tn_current_v1') || 'null');
+if (!curr || curr.role !== 'admin') {
+  showToast('Admin access only', 'error');
+  location.href = 'auth.html';
+}
+
+let revenueChart;
+async function loadReports() {
+  try {
+    const res = await window.api.apiRequest('/api/reports', 'GET', null, window.api.getToken());
+    if (res) {
+      document.getElementById('total-sales').textContent = res.totalSales || 0;
+      document.getElementById('total-customers').textContent = res.totalCustomers || 0;
+      document.getElementById('total-transactions').textContent = res.totalTransactions || 0;
+      document.getElementById('total-revenue').textContent = '₱' + (res.totalRevenue || 0);
+      
+      if (revenueChart) revenueChart.destroy();
+      const ctx = document.getElementById('revenueChart').getContext('2d');
+      revenueChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: res.revenueByDate ? Object.keys(res.revenueByDate) : [],
+          datasets: [{
+            label: 'Revenue (₱)',
+            data: res.revenueByDate ? Object.values(res.revenueByDate) : [],
+            backgroundColor: 'rgba(23, 102, 255, 0.6)',
+            borderColor: 'rgba(23, 102, 255, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } }
+      });
+    } else {
+      showToast('Failed to load reports', 'error');
+    }
+  } catch (e) {
+    showToast('Error loading reports: ' + e.message, 'error');
+  }
+}
+loadReports();
+</script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>AOS.init();</script>
+</body>
+</html>

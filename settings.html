@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Thia & Nicole Laundry - Settings</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="toast.css">
+<style>
+  :root{--bg:#f4f7fb;--card:#fff;--primary:#1766ff;--muted:#6b7280;}
+    body{
+    margin: 0;
+    font-family: Inter, system-ui, Arial;
+    background: url('https://images.unsplash.com/photo-1696546761269-a8f9d2b80512?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE4fHx8ZW58MHx8fHx8&ixlib=rb-4.1.0&q=60&w=3000') no-repeat center center/cover fixed;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, rgba(188, 200, 224, 0.4), rgba(0,0,0,0.3));
+    z-index: 0;
+  }
+  .floating-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(174, 200, 226, 0.416); /* soft blue */
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 25px rgba(31, 31, 31, 0.2);
+    pointer-events: none;
+    animation: floatBubble linear infinite alternate;
+    z-index: 1;
+  } 
+    /* 15 bubbles, scattered & elegant */
+    .bubble1  { width:120px; height:120px; top:10%; left:8%;   animation: floatBubble 8s ease-in-out infinite; }
+    .bubble2  { width:200px; height:200px; bottom:25%; left:12%; animation: floatBubble 5s ease-in-out infinite 2s;}
+    .bubble3  { width:90px;  height:90px;  top:5%;  left:75%;  animation: floatBubble 6s ease-in-out infinite 2s; }
+    .bubble4  { width:150px; height:150px; bottom:20%; right:20%; animation: floatBubble 10s ease-in-out infinite 4s; }
+    .bubble5  { width:180px; height:180px; bottom:2%; left:8%; animation: floatBubble 7s ease-in-out infinite 4s; }
+    .bubble6  { width:100px; height:100px; top:50%; right:5%;   animation: floatBubble 9s ease-in-out infinite 3s; }
+    .bubble7  { width:130px; height:130px; bottom:8%; right:8%; animation: floatBubble 3s ease-in-out infinite 3s; }
+    .bubble8  { width:160px; height:160px; top:38%; left:55%; animation: floatBubble 3s ease-in-out infinite 3s; }
+    .bubble9  { width:110px; height:110px; top:18%; left:20%; animation: floatBubble 5s ease-in-out infinite 3s; }
+    .bubble10 { width:140px; height:140px; bottom:15%; left:65%; animation: floatBubble 2s ease-in-out infinite 2s; }
+    .bubble11 { width:170px; height:170px; bottom:0%; right:60%; animation: floatBubble 3s ease-in-out infinite 1s; }
+    .bubble12 { width:100px; height:100px; bottom:0%; left:25%; animation: floatBubble 8s ease-in-out infinite 4s; }
+    .bubble13 { width:190px; height:190px; top:4%; right:5%; animation: floatBubble 6s ease-in-out infinite 2s; }
+    .bubble14 { width:80px;  height:80px;  top:60%; left:30%; animation: floatBubble 5s ease-in-out infinite 5s; }
+    .bubble15 { width:150px; height:150px; bottom:90%; right:45%; animation: floatBubble 3s ease-in-out infinite 2s; }
+    @keyframes floatBubble {
+        0%   { transform: translateY(0) translateX(0); opacity: 0.7; }
+        50%  { transform: translateY(-40px) translateX(20px); opacity: 1; }
+        100% { transform: translateY(0) translateX(0); opacity: 0.7; }
+  }
+  .app{max-width:520px;margin:30px auto;padding:15px; position: relative;z-index: 10;} 
+  .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06);margin-bottom:12px} /* Adjusted padding and margin */
+  h2{margin-top:0;margin-bottom:15px;color:#111} /* Adjusted margin */
+  label{display: block; margin-bottom: 4px; font-size: 14px; color: #333;} /* Consistent label styling */
+  input{width:100%;padding:9px;margin-top:0;border-radius:8px;border:1px solid #ddd;box-sizing: border-box;} /* Adjusted padding and removed margin-top */
+  .btn{padding:9px 14px;border-radius:10px;background:var(--primary);color:#fff;border:none;cursor:pointer;font-size:14px;} /* Adjusted padding and font size */
+  .btn.alt{background:#eef2ff;color:var(--primary)}
+  .avatar{width:90px;height:90px;border-radius:50%;background:#eee;overflow:hidden;margin:0 auto 10px auto;display:flex;justify-content:center;align-items:center;border:1px solid #ddd;} /* Smaller avatar, centered */
+  .avatar img{width:100%;height:100%;object-fit:cover}
+  .small{font-size:12px;color:var(--muted)} /* Smaller font */
+  .password-field-wrapper {
+    position: relative;
+    margin-bottom: 12px; /* Space after password field */
+  }
+  .password-field-wrapper input {
+    padding-right: 40px; /* Make space for the icon */
+  }
+  .password-field-wrapper .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%; /* Center vertically relative to the input field */
+    transform: translateY(calc(-50% + 2px)); /* Fine-tune vertical alignment */
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 16px;
+  }
+  input[type="file"] {
+    margin-bottom: 15px; /* Space below file input */
+  }
+</style>
+</head>
+<body>
+  <div class="floating-bubble bubble1"></div>
+    <div class="floating-bubble bubble2"></div>
+    <div class="floating-bubble bubble3"></div>
+    <div class="floating-bubble bubble4"></div>
+    <div class="floating-bubble bubble5"></div>
+    <div class="floating-bubble bubble6"></div>
+    <div class="floating-bubble bubble7"></div>
+    <div class="floating-bubble bubble8"></div>
+    <div class="floating-bubble bubble9"></div>
+    <div class="floating-bubble bubble10"></div>
+    <div class="floating-bubble bubble11"></div>
+    <div class="floating-bubble bubble12"></div>
+    <div class="floating-bubble bubble13"></div>
+    <div class="floating-bubble bubble14"></div>
+    <div class="floating-bubble bubble15"></div>
+<div class="app">
+
+  <div class="card">
+    <h2><i class="fas fa-user-circle"></i> Profile Settings</h2>
+    
+    <div class="avatar" id="preview">
+      <i class="fas fa-camera" style="font-size: 30px; color: var(--muted);"></i>
+    </div>
+    <input type="file" id="photo" accept="image/*">
+
+    <label>Name</label>
+    <input id="name">
+    <label style="margin-top: 12px;">Contact Number</label>
+    <input id="contact">
+    <label style="margin-top: 12px;">Address</label>
+    <input id="address">
+
+    <div style="margin-top:14px">
+      <button class="btn" id="save-btn"><i class="fas fa-save"></i> Save Changes</button>
+      <button class="btn alt" onclick="location.href='home.html'"><i class="fas fa-arrow-left"></i> Back</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 15px;"> <!-- Adjusted margin-top -->
+    <h2><i class="fas fa-key"></i> Change Password</h2>
+    <label>Current Password</label>
+    <div class="password-field-wrapper">
+      <input id="current-pass" type="password" placeholder="Enter current password">
+      <i class="toggle-password fas fa-eye"></i>
+    </div>
+    <label>New Password</label>
+    <div class="password-field-wrapper">
+      <input id="new-pass" type="password" placeholder="Enter new password">
+      <i class="toggle-password fas fa-eye"></i>
+    </div>
+    <label>Re-enter New Password</label>
+    <div class="password-field-wrapper">
+      <input id="re-new-pass" type="password" placeholder="Re-enter new password">
+      <i class="toggle-password fas fa-eye"></i>
+    </div>
+    <div style="margin-top:14px">
+      <button class="btn" id="change-pass-btn"><i class="fas fa-lock"></i> Change Password</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="toast.js"></script>
+<script>
+/* ---------- HELPERS ---------- */
+const LS_CURR = 'tn_current_v1';
+const LS_USERS = 'tn_accounts_v2';
+function getUsers(){return JSON.parse(localStorage.getItem(LS_USERS)||'[]');}
+function saveUsers(arr){localStorage.setItem(LS_USERS,JSON.stringify(arr));}
+function setCurrent(u){localStorage.setItem(LS_CURR,JSON.stringify(u));}
+
+const curr = JSON.parse(localStorage.getItem(LS_CURR)||'null');
+if(!curr){
+  showToast('Please login first', 'error');
+  location.href='auth.html';
+}
+
+/* ---------- LOAD CURRENT DATA ---------- */
+document.getElementById('name').value = curr.name || '';
+document.getElementById('contact').value = curr.contact || '';
+document.getElementById('address').value = curr.address || '';
+if(curr.photo){
+  document.getElementById('preview').innerHTML = `<img src="${curr.photo}">`;
+}
+
+/* ---------- PREVIEW PHOTO ---------- */
+document.getElementById('photo').addEventListener('change', e=>{
+  const file = e.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = ()=>{document.getElementById('preview').innerHTML = `<img src="${reader.result}">`;};
+    reader.readAsDataURL(file);
+  }
+});
+
+/* ---------- SAVE CHANGES ---------- */
+document.getElementById('save-btn').onclick = ()=>{
+  const name = document.getElementById('name').value.trim();
+  const contact = document.getElementById('contact').value.trim();
+  const address = document.getElementById('address').value.trim();
+  const img = document.querySelector('#preview img')?.src;
+
+  if(!name||!contact){showToast('Please fill out Name and Contact fields', 'error');return;}
+
+  const users = getUsers();
+  const idx = users.findIndex(u=>u.email===curr.email);
+  if(idx===-1){showToast('User not found', 'error');return;}
+
+  users[idx].name = name;
+  users[idx].contact = contact;
+  users[idx].address = address;
+  if(img) users[idx].photo = img;
+
+  saveUsers(users);
+  setCurrent(users[idx]);
+
+  showToast('Profile updated successfully!', 'success');
+  // No redirect, stay on settings page
+};
+
+/* -------- PASSWORD TOGGLE -------- */
+document.querySelectorAll('.toggle-password').forEach(icon => {
+  icon.addEventListener('click', () => {
+    const passwordInput = icon.previousElementSibling;
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      icon.classList.remove('fa-eye');
+      icon.classList.add('fa-eye-slash');
+    } else {
+      passwordInput.type = 'password';
+      icon.classList.remove('fa-eye-slash');
+      icon.classList.add('fa-eye');
+    }
+  });
+});
+
+/* ---------- CHANGE PASSWORD ---------- */
+document.getElementById('change-pass-btn').onclick = ()=>{
+  const currentPass = document.getElementById('current-pass').value.trim();
+  const newPass = document.getElementById('new-pass').value.trim();
+  const reNewPass = document.getElementById('re-new-pass').value.trim();
+
+  if(!currentPass || !newPass || !reNewPass){
+    showToast('Please fill all password fields', 'error');
+    return;
+  }
+
+  if(btoa(currentPass) !== curr.password){ // Compare encoded current password
+    showToast('Current password is incorrect', 'error');
+    return;
+  }
+
+  if(newPass !== reNewPass){
+    showToast('New passwords do not match', 'error');
+    return;
+  }
+
+  const pwPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,15}$/;
+  if(!pwPattern.test(newPass)){
+    showToast('New password must be 8-15 chars with upper, lower & special characters', 'error');
+    return;
+  }
+
+  const users = getUsers();
+  const idx = users.findIndex(u=>u.email===curr.email);
+  if(idx===-1){showToast('User not found', 'error');return;}
+
+  users[idx].password = btoa(newPass); // Encode new password
+  saveUsers(users);
+  setCurrent(users[idx]); // Update current user in session
+
+  showToast('Password changed successfully!', 'success');
+  // Clear password fields
+  document.getElementById('current-pass').value = '';
+  document.getElementById('new-pass').value = '';
+  document.getElementById('re-new-pass').value = '';
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Thia & Nicole Laundry - Payment Receipt</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="toast.css">
+<style>
+  :root{--bg:#f4f7fb;--card:#fff;--primary:#1766ff;--muted:#6b7280;}
+  body{margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);}
+  .app{max-width:480px;margin:30px auto;padding:15px} /* Adjusted padding */
+  .card{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06);margin-bottom:12px} /* Adjusted padding and margin */
+  h2{margin-top:0;margin-bottom:15px;color:#111} /* Adjusted margin */
+  .btn{padding:9px 14px;border-radius:10px;background:var(--primary);color:#fff;border:none;cursor:pointer;font-size:14px;} /* Adjusted padding and font size */
+  .btn.alt{background:#eef2ff;color:var(--primary)}
+  .small{font-size:12px;color:var(--muted)} /* Smaller font */
+  .receipt-details div {
+    margin-bottom: 6px; /* Adjusted margin */
+    font-size: 14px; /* Consistent font size */
+  }
+  .receipt-details strong {
+    display: inline-block;
+    width: 130px; /* Slightly wider for alignment */
+  }
+  .receipt-details {
+    margin-top: 15px; /* Adjusted margin */
+    padding-top: 12px; /* Adjusted padding */
+    border-top: 1px dashed #eee;
+  }
+  .receipt-details div:last-child {
+    margin-top: 12px; /* Adjusted margin */
+    padding-top: 10px; /* Adjusted padding */
+    border-top: 1px solid #eee;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="card" style="text-align: center;">
+    <i class="fas fa-check-circle" style="font-size: 50px; color: green; margin-bottom: 12px;"></i> <!-- Smaller icon -->
+    <h2>Payment Successful!</h2>
+    <p class="small">Thank you for your transaction.</p>
+
+    <div class="receipt-details" style="text-align: left;">
+      <div><strong>Transaction ID:</strong> <span id="receipt-transaction-id"></span></div>
+      <div><strong>Service:</strong> <span id="receipt-service"></span></div>
+      <div><strong>Weight:</strong> <span id="receipt-weight"></span> kg</div>
+      <div><strong>Quantity:</strong> <span id="receipt-qty"></span></div>
+      <div><strong>Pickup/Delivery:</strong> <span id="receipt-pickup"></span></div>
+      <div><strong>Machines:</strong> <span id="receipt-machines"></span></div> <!-- Added for machines -->
+      <div><strong>Payment Method:</strong> <span id="receipt-method"></span></div>
+      <div><strong>Payment Status:</strong> <span id="receipt-payment-status"></span></div>
+      <div><strong>Date:</strong> <span id="receipt-date"></span></div>
+      <div><strong>Est. Pickup/Delivery:</strong> <span id="receipt-est-pickup-delivery"></span></div> <!-- New line -->
+      <div style="font-size: 16px; font-weight: bold;">
+        <strong>Total Amount:</strong> <span id="receipt-total" style="color: var(--primary);"></span>
+      </div>
+    </div>
+
+    <div style="margin-top:20px">
+      <button class="btn" onclick="location.href='transactions.html'"><i class="fas fa-receipt"></i> View My Transactions</button>
+      <button class="btn alt" onclick="location.href='home.html'"><i class="fas fa-home"></i> Back to Home</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="toast.js"></script>
+<script>
+/* ---------- HELPERS ---------- */
+const LS_CURR = 'tn_current_v1';
+const LS_MACH = 'tn_machines_v1'; // Added machines
+
+const curr = JSON.parse(localStorage.getItem(LS_CURR)||'null');
+if(!curr){
+  showToast('Please login first', 'error');
+  location.href='auth.html';
+}
+
+const lastReceipt = JSON.parse(localStorage.getItem('last_receipt')||'null');
+if(!lastReceipt){
+  showToast('No recent receipt found', 'error');
+  location.href='transactions.html'; // Redirect to transactions if no receipt
+} else {
+  document.getElementById('receipt-transaction-id').textContent = lastReceipt.id;
+  document.getElementById('receipt-service').textContent = lastReceipt.service;
+  document.getElementById('receipt-weight').textContent = lastReceipt.weight;
+  document.getElementById('receipt-qty').textContent = lastReceipt.qty;
+  document.getElementById('receipt-pickup').textContent = lastReceipt.pickup === 'deliver' ? 'Delivery (+₱20)' : 'Pickup';
+  
+  // Display machine info
+  let machineInfo = "N/A";
+  if (lastReceipt.reservedMachines && lastReceipt.reservedMachines.length > 0) {
+    const machines = JSON.parse(localStorage.getItem(LS_MACH) || '[]');
+    machineInfo = lastReceipt.reservedMachines.map(resId => {
+      const machine = machines.find(m => m.id === resId);
+      return machine ? machine.name : resId;
+    }).join(", ");
+  } else if (lastReceipt.allocatedWasherIds || lastReceipt.allocatedDryerIds) {
+      let allocatedNames = [];
+      const machines = JSON.parse(localStorage.getItem(LS_MACH) || '[]');
+      if (lastReceipt.allocatedWasherIds && lastReceipt.allocatedWasherIds.length > 0) {
+          lastReceipt.allocatedWasherIds.forEach(washerId => {
+              const washer = machines.find(m => m.id === washerId);
+              if (washer) allocatedNames.push(washer.name);
+          });
+      }
+      if (lastReceipt.allocatedDryerIds && lastReceipt.allocatedDryerIds.length > 0) {
+          lastReceipt.allocatedDryerIds.forEach(dryerId => {
+              const dryer = machines.find(m => m.id === dryerId);
+              if (dryer) allocatedNames.push(dryer.name);
+          });
+      }
+      if (allocatedNames.length > 0) {
+          machineInfo = allocatedNames.join(", ");
+      }
+  }
+  if (machineInfo === "N/A" && lastReceipt.status.includes('Queued')) {
+    machineInfo = `Queued for ${lastReceipt.queuedFor}`;
+  }
+  document.getElementById('receipt-machines').textContent = machineInfo;
+
+  document.getElementById('receipt-method').textContent = lastReceipt.paidWith || 'Unpaid';
+  document.getElementById('receipt-payment-status').textContent = lastReceipt.paidWith ? 'Paid' : 'Unpaid';
+  document.getElementById('receipt-date').textContent = new Date(lastReceipt.createdAt).toLocaleString();
+  document.getElementById('receipt-total').textContent = '₱' + lastReceipt.total;
+
+  // Estimated Pickup/Delivery Date
+  let estimatedPickupDelivery = 'N/A';
+  if (lastReceipt.pickup === 'pickup' && lastReceipt.estimatedCompletion) {
+      const pickupDate = new Date(lastReceipt.estimatedCompletion);
+      estimatedPickupDelivery = pickupDate.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+  } else if (lastReceipt.pickup === 'deliver' && lastReceipt.estimatedCompletion) {
+      const deliveryDate = new Date(lastReceipt.estimatedCompletion);
+      estimatedPickupDelivery = deliveryDate.toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+  } else if (lastReceipt.status.includes('Queued')) {
+      estimatedPickupDelivery = 'TBD (Queued)';
+  }
+  document.getElementById('receipt-est-pickup-delivery').textContent = estimatedPickupDelivery;
+
+
+  // Clear the last receipt from local storage after displaying
+  localStorage.removeItem('last_receipt');
+}
+</script>
+</body>
+</html>
